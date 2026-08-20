@@ -13,14 +13,15 @@ console.log('Starting Africa Health Facilities server...');
 console.log('PORT:', PORT);
 console.log('NODE_ENV:', process.env.NODE_ENV);
 
-try {
-  app.listen(Number(PORT), '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-} catch (err) {
-  console.error('Failed to start server:', err);
+// Start listening immediately so healthcheck passes
+const server = app.listen(Number(PORT), '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+server.on('error', (err) => {
+  console.error('Server error:', err);
   process.exit(1);
-}
+});
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);
