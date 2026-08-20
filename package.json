@@ -27,7 +27,6 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "papaparse": "^5.4.1",
-    "xlsx": "^0.18.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -41,6 +40,7 @@
     "supertest": "^6.3.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
-    "vitest": "^1.2.2"
+    "vitest": "^1.2.2",
+    "xlsx": "^0.18.5"
   }
 }
