@@ -4,8 +4,8 @@
   "description": "Comprehensive registry of health facilities across Africa",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
+    "build": "prisma generate && tsc",
+    "start": "node start.js",
     "dev": "ts-node src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
