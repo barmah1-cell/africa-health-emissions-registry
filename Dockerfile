@@ -28,7 +28,7 @@ WORKDIR /app
 RUN apk add --no-cache openssl
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev && npm install prisma@5.22.0
 
 # Copy built output and assets
 COPY --from=builder /app/dist ./dist
@@ -37,13 +37,10 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-# Generate Prisma client for production
-RUN npx prisma generate
-
 EXPOSE 3000
 
 ENV NODE_ENV=production
 ENV PORT=3000
 
 # Run migrations then start the server
-CMD sh -c "npx prisma migrate deploy && echo 'Starting server...' && node dist/index.js"
+CMD sh -c "npx prisma migrate deploy 2>&1 && echo '=== Starting Node ===' && node --trace-warnings dist/index.js 2>&1 || (echo 'Node crashed with exit code:' $? && exit 1)"
