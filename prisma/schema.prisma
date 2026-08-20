@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+model Facility {
+  id                       String         @id @default(uuid()) @db.Uuid
+  names                    Json           @db.JsonB
+  addresses                Json           @db.JsonB
+  defaultLocale            String         @map("default_locale") @db.VarChar(10)
+  /// Denormalized name text from the default locale, used for unique constraint and ordering.
+  /// Application layer must keep this in sync with names[defaultLocale].
+  nameText                 String         @map("name_text") @db.VarChar(500)
+  facilityType             String         @map("facility_type") @db.VarChar(100)
+  country                  String         @db.VarChar(100)
+  adminRegion              String         @map("admin_region") @db.VarChar(200)
+  city                     String?        @db.VarChar(200)
+  ownership                String         @db.VarChar(20)
+  operationalStatus        String         @map("operational_status") @db.VarChar(50)
+  contactInfo              Json?          @map("contact_info") @db.JsonB
+  beds                     Int?
+  verificationStatus       String         @default("unverified") @map("verification_status") @db.VarChar(50)
+  verificationDate         DateTime?      @map("verification_date")
+  energyVerificationStatus String         @default("unverified") @map("energy_verification_status") @db.VarChar(50)
+  energyVerificationDate   DateTime?      @map("energy_verification_date")
+  createdAt                DateTime       @default(now()) @map("created_at")
+  updatedAt                DateTime       @updatedAt @map("updated_at")
+  deletedAt                DateTime?      @map("deleted_at")
+
+  // The geolocation column is managed via raw SQL migration (PostGIS geography type)
+  // Prisma doesn't natively support geography(Point, 4326)
+  // We use Unsupported to declare it in the schema
+  geolocation              Unsupported("geography(Point,4326)")?
+
+  energySources  EnergySource[]
+  ghgEmissions   GhgEmission[]
+  auditEntries   AuditEntry[]
+
+  @@index([country, facilityType, operationalStatus], map: "idx_facility_country_type_status")
+  @@index([deletedAt], map: "idx_facility_active")
+  @@map("facility")
+}
+
+model EnergySource {
+  id                String   @id @default(uuid()) @db.Uuid
+  facilityId        String   @map("facility_id") @db.Uuid
+  energyType        String   @map("energy_type") @db.VarChar(50)
+  consumptionKwhYear Decimal? @map("consumption_kwh_year") @db.Decimal(15, 2)
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  facility Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+
+  @@index([facilityId], map: "idx_energy_source_facility")
+  @@map("energy_source")
+}
+
+model GhgEmission {
+  id              String   @id @default(uuid()) @db.Uuid
+  facilityId      String   @map("facility_id") @db.Uuid
+  emissionScope   String   @map("emission_scope") @db.VarChar(20)
+  valueTonnesCo2e Decimal  @map("value_tonnes_co2e") @db.Decimal(15, 2)
+  reportingYear   Int      @map("reporting_year")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  facility Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+
+  @@unique([facilityId, emissionScope, reportingYear], map: "uq_ghg_emission_facility_scope_year")
+  @@map("ghg_emission")
+}
+
+model EmissionFactor {
+  id                  String   @id @default(uuid()) @db.Uuid
+  country             String   @db.VarChar(100)
+  energySourceType    String   @map("energy_source_type") @db.VarChar(50)
+  factorKgCo2ePerKwh  Decimal  @map("factor_kg_co2e_per_kwh") @db.Decimal(10, 6)
+  referenceYear       Int      @map("reference_year")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@unique([country, energySourceType, referenceYear], map: "uq_emission_factor_country_source_year")
+  @@map("emission_factor")
+}
+
+model AuditEntry {
+  id            String   @id @default(uuid()) @db.Uuid
+  facilityId    String?  @map("facility_id") @db.Uuid
+  userId        String   @map("user_id") @db.VarChar(255)
+  operationType String   @map("operation_type") @db.VarChar(20)
+  changes       Json     @db.JsonB
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  facility Facility? @relation(fields: [facilityId], references: [id], onDelete: SetNull)
+
+  @@index([facilityId], map: "idx_audit_entry_facility")
+  @@index([createdAt], map: "idx_audit_entry_created_at")
+  @@map("audit_entry")
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  role         String   @default("user") @db.VarChar(10)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("user")
+}

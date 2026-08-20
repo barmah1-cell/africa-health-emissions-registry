@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Africa Health Facilities and Emissions Registry</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #1a1a2e; }
+    
+    .header { background: #1a1a2e; color: white; padding: 16px 24px; display: flex; align-items: center; gap: 16px; }
+    .header h1 { font-size: 20px; font-weight: 600; }
+    .header .stats { margin-left: auto; font-size: 14px; opacity: 0.8; }
+
+    .layout { display: grid; grid-template-columns: 360px 1fr; height: calc(100vh - 56px); transition: grid-template-columns 0.3s; }
+    .layout.sidebar-hidden { grid-template-columns: 0px 1fr; }
+    .layout.sidebar-hidden .sidebar { overflow: hidden; width: 0; min-width: 0; border: none; padding: 0; }
+    
+    .sidebar { background: white; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; min-width: 360px; transition: min-width 0.3s, width 0.3s; }
+    
+    .sidebar-toggle { position: fixed; top: 72px; left: 328px; z-index: 1001; background: white; border: none; width: 32px; height: 32px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: left 0.3s; }
+    .sidebar-toggle:hover { background: #f1f5f9; }
+    .layout.sidebar-hidden ~ .sidebar-toggle, .sidebar-hidden .sidebar-toggle { left: 8px; }
+    
+    .filters { padding: 16px; border-bottom: 1px solid #e2e8f0; }
+    .filters h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 10px; }
+    .filter-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .filter-row select, .filter-row input { flex: 1; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; background: #f8fafc; }
+    .filter-row select:focus, .filter-row input:focus { outline: none; border-color: #3b82f6; background: white; }
+    .btn { padding: 8px 14px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500; }
+    .btn-primary { background: #3b82f6; color: white; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-secondary { background: #f1f5f9; color: #475569; }
+    .btn-secondary:hover { background: #e2e8f0; }
+
+    .facility-list { flex: 1; overflow-y: auto; padding: 8px; }
+    .facility-card { padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
+    .facility-card:hover { border-color: #3b82f6; background: #f0f7ff; }
+    .facility-card.active { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 0 0 2px rgba(59,130,246,0.15); }
+    .facility-card .name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .facility-card .meta { font-size: 12px; color: #64748b; display: flex; gap: 8px; flex-wrap: wrap; }
+    .facility-card .meta span { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
+    .facility-card .meta .badge-stale { background: #fef3c7; color: #92400e; }
+    .facility-card .meta .badge-type { background: #dbeafe; color: #1e40af; }
+    .facility-card .meta .badge-country { background: #d1fae5; color: #065f46; }
+
+    .pagination { padding: 12px 16px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #64748b; }
+    .pagination button { padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 4px; background: white; cursor: pointer; font-size: 12px; }
+    .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .pagination button:hover:not(:disabled) { background: #f1f5f9; }
+
+    .map-container { position: relative; }
+    #map { width: 100%; height: 100%; }
+    .map-loading { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(26,26,46,0.9); color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; z-index: 1000; display: none; }
+    .map-loading.visible { display: block; }
+
+    .map-legend { position: absolute; bottom: 24px; left: 16px; background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.12); padding: 0; z-index: 1000; font-size: 12px; max-width: 200px; overflow: hidden; transition: all 0.2s; }
+    .map-legend.collapsed .legend-body { display: none; }
+    .map-legend.collapsed { padding: 0; }
+    .legend-toggle { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; cursor: pointer; user-select: none; font-weight: 600; font-size: 12px; color: #1a1a2e; }
+    .legend-toggle:hover { background: #f8fafc; }
+    .legend-toggle .arrow { transition: transform 0.2s; font-size: 10px; }
+    .map-legend.collapsed .legend-toggle .arrow { transform: rotate(180deg); }
+    .legend-body { padding: 0 14px 14px; }
+    .map-legend h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 8px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .legend-item:last-child { margin-bottom: 0; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #1e40af; flex-shrink: 0; }
+    .legend-cluster { margin-top: 10px; padding-top: 8px; border-top: 1px solid #f1f5f9; }
+    .legend-cluster-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .legend-cluster-dot { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: white; flex-shrink: 0; }
+
+    .detail-panel { position: absolute; top: 16px; right: 16px; width: 380px; max-height: calc(100% - 32px); background: white; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.12); overflow-y: auto; z-index: 1000; display: none; }
+    .detail-panel.visible { display: block; }
+    .detail-panel .close-btn { position: absolute; top: 12px; right: 12px; background: #f1f5f9; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .detail-panel .close-btn:hover { background: #e2e8f0; }
+    .detail-header { padding: 20px 20px 12px; }
+    .detail-header h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; padding-right: 30px; }
+    .detail-header .subtitle { color: #64748b; font-size: 13px; }
+    .detail-section { padding: 12px 20px; border-top: 1px solid #f1f5f9; }
+    .detail-section h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; margin-bottom: 8px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+    .detail-row .label { color: #64748b; }
+    .detail-row .value { font-weight: 500; text-align: right; max-width: 200px; }
+    .detail-row .value.stale { color: #dc2626; }
+    .detail-row .value.fresh { color: #16a34a; }
+
+    .loading { text-align: center; padding: 40px; color: #94a3b8; }
+    .empty-state { text-align: center; padding: 40px 20px; color: #94a3b8; }
+    .empty-state p { margin-top: 8px; font-size: 13px; }
+
+    /* Cluster styling */
+    .marker-cluster-small { background-color: rgba(59, 130, 246, 0.3); }
+    .marker-cluster-small div { background-color: rgba(59, 130, 246, 0.7); }
+    .marker-cluster-medium { background-color: rgba(245, 158, 11, 0.3); }
+    .marker-cluster-medium div { background-color: rgba(245, 158, 11, 0.7); }
+    .marker-cluster-large { background-color: rgba(239, 68, 68, 0.3); }
+    .marker-cluster-large div { background-color: rgba(239, 68, 68, 0.7); }
+    .marker-cluster div { color: white; font-weight: 700; font-size: 12px; }
+
+    /* Add Facility Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
+    .modal-overlay.visible { display: flex; }
+    .modal { background: white; border-radius: 12px; width: 480px; max-width: 90vw; max-height: 85vh; overflow-y: auto; padding: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+    .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1a1a2e; }
+    .modal-form label { display: block; font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 4px; margin-top: 12px; }
+    .modal-form input, .modal-form select { width: 100%; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; background: #f8fafc; }
+    .modal-form input:focus, .modal-form select:focus { outline: none; border-color: #3b82f6; background: white; }
+    .modal-form .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
+    .modal-errors { margin-top: 12px; padding: 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; font-size: 12px; color: #dc2626; display: none; }
+    .modal-errors.visible { display: block; }
+    .modal-success { position: fixed; top: 72px; left: 50%; transform: translateX(-50%); background: #065f46; color: white; padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 3000; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .modal-success.visible { display: block; }
+    .btn-add-facility { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; width: 100%; justify-content: center; padding: 8px 14px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .btn-add-facility:hover { background: #059669; }
+
+    /* Token prompt within modal */
+    .token-prompt { margin-top: 12px; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; display: none; }
+    .token-prompt.visible { display: block; }
+    .token-prompt label { margin-top: 0; }
+    .token-prompt .note { font-size: 11px; color: #64748b; margin-top: 4px; }
+
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; grid-template-rows: 50% 50%; }
+      .detail-panel { width: calc(100% - 32px); }
+      .modal { width: calc(100% - 32px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🏥 Africa Health Facilities and Emissions Registry</h1>
+    <span style="font-size:11px; opacity:0.6; margin-left:8px;">by <a href="https://barmah1.org" target="_blank" style="color:white; text-decoration:underline;">Prof. Bartholomew Armah (PhD)</a></span>
+    <a href="#" onclick="openSourcesPanel(); return false;" style="color:#94a3b8; font-size:13px; text-decoration:none; margin-left:16px;">📋 Data Sources</a>
+    <div class="stats" id="stats">Loading...</div>
+  </div>
+
+  <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+  <div class="layout" id="layout">
+    <div class="sidebar">
+      <div class="filters">
+        <h3>Filters</h3>
+        <button class="btn-add-facility" onclick="openAddFacilityModal()">+ Add Facility</button>
+        <div class="filter-row">
+          <select id="filter-country">
+            <option value="">All Countries</option>
+          </select>
+        </div>
+        <div class="filter-row">
+          <select id="filter-type">
+            <option value="">All Types</option>
+            <option value="hospital">Hospital</option>
+            <option value="clinic">Clinic</option>
+            <option value="health_post">Health Post</option>
+            <option value="pharmacy">Pharmacy</option>
+            <option value="laboratory">Laboratory</option>
+            <option value="community_health_center">Community Health Center</option>
+          </select>
+          <select id="filter-status">
+            <option value="">All Statuses</option>
+            <option value="operational">Operational</option>
+            <option value="temporarily_closed">Temporarily Closed</option>
+            <option value="permanently_closed">Permanently Closed</option>
+            <option value="under_construction">Under Construction</option>
+          </select>
+        </div>
+        <div class="filter-row">
+          <input type="text" id="filter-keyword" placeholder="Search by name..." />
+          <button class="btn btn-primary" onclick="applyFilters()">Search</button>
+        </div>
+        <div class="filter-row">
+          <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+        </div>
+      </div>
+
+      <div class="facility-list" id="facility-list">
+        <div class="loading">Loading facilities...</div>
+      </div>
+
+      <div class="pagination" id="pagination" style="display:none;">
+        <button id="prev-btn" onclick="prevPage()" disabled>← Prev</button>
+        <span id="page-info">Page 1 of 1</span>
+        <button id="next-btn" onclick="nextPage()">Next →</button>
+      </div>
+    </div>
+
+    <div class="map-container">
+      <div id="map"></div>
+      <div class="map-loading" id="map-loading">Loading map markers...</div>
+      <div class="map-legend" id="map-legend">
+        <div class="legend-toggle" onclick="toggleLegend()">Legend <span class="arrow">▼</span></div>
+        <div class="legend-body">
+          <h4>Facility Type</h4>
+        <div class="legend-item"><div class="legend-dot" style="background:#dc2626;"></div> Hospital</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div> Clinic</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Health Post</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#9333ea;"></div> Pharmacy</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div> Laboratory</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#0891b2;"></div> Community Health Center</div>
+        <div class="legend-cluster">
+          <h4>Data Quality</h4>
+          <div class="legend-item"><div class="legend-dot" style="background:#94a3b8; opacity:0.5;"></div> Unverified (faded)</div>
+        </div>
+        <div class="legend-cluster">
+          <h4>Clusters</h4>
+          <div class="legend-cluster-item"><div class="legend-cluster-dot" style="background:rgba(59,130,246,0.7);">5</div> Small (&lt;100)</div>
+          <div class="legend-cluster-item"><div class="legend-cluster-dot" style="background:rgba(245,158,11,0.7);">50</div> Medium (100-999)</div>
+          <div class="legend-cluster-item"><div class="legend-cluster-dot" style="background:rgba(239,68,68,0.7);">1k</div> Large (1000+)</div>
+        </div>
+        </div>
+      </div>
+      <div class="detail-panel" id="detail-panel">
+        <button class="close-btn" onclick="closeDetail()">×</button>
+        <div id="detail-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Facility Modal -->
+  <div class="modal-overlay" id="add-facility-modal">
+    <div class="modal">
+      <h2>Add New Facility</h2>
+      <form class="modal-form" id="add-facility-form" onsubmit="submitFacility(event)">
+        <label for="af-name">Name *</label>
+        <input type="text" id="af-name" required placeholder="Facility name" />
+
+        <div class="row-2">
+          <div>
+            <label for="af-type">Facility Type *</label>
+            <select id="af-type" required>
+              <option value="hospital">Hospital</option>
+              <option value="clinic">Clinic</option>
+              <option value="health_post">Health Post</option>
+              <option value="pharmacy">Pharmacy</option>
+              <option value="laboratory">Laboratory</option>
+              <option value="community_health_center">Community Health Center</option>
+            </select>
+          </div>
+          <div>
+            <label for="af-country">Country *</label>
+            <select id="af-country" required></select>
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div>
+            <label for="af-region">Admin Region *</label>
+            <input type="text" id="af-region" required placeholder="e.g. Nairobi" />
+          </div>
+          <div>
+            <label for="af-city">City</label>
+            <input type="text" id="af-city" placeholder="Optional" />
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div>
+            <label for="af-lat">Latitude *</label>
+            <input type="number" id="af-lat" required step="any" placeholder="e.g. -1.2921" />
+          </div>
+          <div>
+            <label for="af-lng">Longitude *</label>
+            <input type="number" id="af-lng" required step="any" placeholder="e.g. 36.8219" />
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div>
+            <label for="af-status">Operational Status *</label>
+            <select id="af-status" required>
+              <option value="operational">Operational</option>
+              <option value="temporarily_closed">Temporarily Closed</option>
+              <option value="permanently_closed">Permanently Closed</option>
+              <option value="under_construction">Under Construction</option>
+            </select>
+          </div>
+          <div>
+            <label for="af-ownership">Ownership *</label>
+            <select id="af-ownership" required>
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div>
+            <label for="af-beds">Beds</label>
+            <input type="number" id="af-beds" min="0" placeholder="Optional" />
+          </div>
+          <div>
+            <label for="af-phone">Phone</label>
+            <input type="text" id="af-phone" placeholder="Optional" />
+          </div>
+        </div>
+
+        <label for="af-email">Email</label>
+        <input type="email" id="af-email" placeholder="Optional" />
+
+        <div class="token-prompt" id="token-prompt">
+          <label for="af-token">JWT Token *</label>
+          <input type="text" id="af-token" placeholder="Paste your admin JWT token" />
+          <div class="note">Use admin token for authentication</div>
+        </div>
+
+        <div class="modal-errors" id="modal-errors"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeAddFacilityModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sources Modal -->
+  <div class="modal-overlay" id="sources-modal">
+    <div class="modal" style="width:560px;">
+      <h2>Data Sources</h2>
+      <div style="font-size:13px; line-height:1.7; color:#475569;">
+        <p style="color:#1a1a2e; font-weight:600; margin-bottom:12px;">Designed and owned by Prof. Bartholomew Armah (PhD)</p>
+
+        <div style="background:#fef3c7; border:1px solid #fcd34d; border-radius:6px; padding:10px 12px; margin-bottom:16px; font-size:12px; color:#92400e;">
+          <b>⚠ Scope Limitation:</b> This system currently models only Scope 1 (on-site fuel combustion) and Scope 2 (purchased electricity) emissions from energy consumption data. Scope 3 emissions (supply chain, transport, waste, procurement) are not modelled. Published studies show Scope 3 can account for &gt;90% of total healthcare facility emissions. Emission figures shown here represent only the energy-related portion of the full carbon footprint.
+        </div>
+        <h4 style="color:#1a1a2e; margin-top:16px; margin-bottom:6px;">Facility Data</h4>
+        <p><b>WHO/KEMRI Sub-Saharan Africa Health Facility Database</b><br>
+        Maina J, Ouma PO, Macharia PM, et al. (2019). A spatial database of health facilities managed by the public health sector in sub Saharan Africa. <i>Scientific Data</i>, 6, 134.<br>
+        <span style="color:#64748b">98,745 public health facilities across 50 countries. Accessed via Humanitarian Data Exchange.</span></p>
+
+        <h4 style="color:#1a1a2e; margin-top:16px; margin-bottom:6px;">Measured Emission Data</h4>
+        <p><b>HIGH Horizons — Carbon Emission Assessment Report (2024)</b><br>
+        Sulaiman Z, Mung'atia A, Maimela G, et al. Report on the carbon emission assessment of selected health facilities in Kenya, South Africa, and Zimbabwe. Zenodo. DOI: 10.5281/zenodo.12703876<br>
+        <span style="color:#64748b">Actual measured Scope 1, 2 & 3 emissions from Aga Khan facilities (Kenya), Wits RHI sites (South Africa), and CeSHHAR facilities (Zimbabwe). CC-BY 4.0 licensed.</span></p>
+
+        <p><b>Cederberg Primary Care Subdistrict Study (2025)</b><br>
+        Assessing greenhouse gas emissions in a primary care subdistrict in Cederberg, South Africa. BMC Health Services Research.<br>
+        <span style="color:#64748b">Measured: 1,228 tonnes CO₂e/year across 6 clinics (10.5 kg CO₂e per consultation). Used for South African clinic-level data.</span></p>
+
+        <h4 style="color:#1a1a2e; margin-top:16px; margin-bottom:6px;">Emission Factors</h4>
+        <p><b>IEA Emission Factors (2022)</b><br>
+        Country-specific grid electricity emission factors (kg CO₂e/kWh) from the International Energy Agency.<br>
+        <span style="color:#64748b">Used for Scope 2 emission estimates.</span></p>
+        <p><b>IPCC Guidelines for National GHG Inventories</b><br>
+        Default emission factor for diesel generators: 0.8 kg CO₂e/kWh.<br>
+        <span style="color:#64748b">Used for Scope 1 emission estimates.</span></p>
+
+        <h4 style="color:#1a1a2e; margin-top:16px; margin-bottom:6px;">Energy Consumption Estimates</h4>
+        <p><b>Improving Energy Efficiency of Thermal Processes in Healthcare Institutions</b><br>
+        Energies 2020, 13(3), 569. Healthcare facilities: 43–92 kWh per bed per day.<br>
+        <span style="color:#64748b">Used to model energy consumption for hospitals with known bed counts.</span></p>
+
+        <h4 style="color:#1a1a2e; margin-top:16px; margin-bottom:6px;">Map Tiles</h4>
+        <p><b>OpenStreetMap</b><br>
+        © OpenStreetMap contributors. Tiles served via openstreetmap.org.</p>
+
+        <h4 style="color:#1a1a2e; margin-top:16px; margin-bottom:6px;">Methodology: Emissions Estimation</h4>
+        <p style="margin-bottom:8px;">Where direct emission measurements are unavailable, the system estimates GHG emissions using the following approach:</p>
+        <p><b>Scope 1 (Direct emissions)</b><br>
+        <span style="color:#64748b">Calculated from on-site diesel generator consumption:<br>
+        <code>Scope 1 = Diesel consumption (kWh/yr) × 0.8 kg CO₂e/kWh ÷ 1000</code><br>
+        The factor of 0.8 kg CO₂e/kWh is the IPCC default for diesel power generation.</span></p>
+        <p><b>Scope 2 (Indirect energy emissions)</b><br>
+        <span style="color:#64748b">Calculated from purchased grid electricity consumption:<br>
+        <code>Scope 2 = Grid consumption (kWh/yr) × Country emission factor (kg CO₂e/kWh) ÷ 1000</code><br>
+        Country-specific grid emission factors are sourced from IEA (2022) and vary significantly — from 0.003 (DRC, hydro) to 0.928 (South Africa, coal).</span></p>
+        <p><b>Scope 3 (Value chain emissions)</b><br>
+        <span style="color:#64748b">NOT currently modelled. Includes pharmaceutical supply chain, medical equipment procurement, waste disposal, staff and patient transport, food services. Published research (Cederberg study) indicates Scope 3 can represent &gt;90% of total primary care facility emissions.</span></p>
+        <p><b>Energy consumption estimation</b><br>
+        <span style="color:#64748b">Where meter data is unavailable, consumption is estimated from:<br>
+        • Large hospitals: 60–92 kWh per bed per day (source: Energies 2020)<br>
+        • Medium hospitals: 43–60 kWh per bed per day<br>
+        • Small/rural clinics: ~25 kWh per day total<br>
+        These are benchmarks; actual consumption varies by climate, equipment, and services offered.</span></p>
+        <p><b>Temporal factor selection</b><br>
+        <span style="color:#64748b">When multiple emission factors exist for a country (different years), the system uses the most recent factor with a reference year not exceeding the reporting year. This accounts for grid decarbonisation over time.</span></p>
+
+        <h4 style="color:#1a1a2e; margin-top:16px; margin-bottom:6px;">Data Quality Notes</h4>
+        <ul style="margin-left:16px; color:#64748b;">
+          <li>~2.4% of facility coordinates have known quality issues (flagged as unverified)</li>
+          <li>Energy data is available for ~37 major hospitals across 11 countries</li>
+          <li>Emission estimates are modelled unless marked "field-verified"</li>
+          <li>Aga Khan (Kenya) and select SA clinics have actual measured emissions</li>
+          <li>Facility names in French/Portuguese may have residual encoding issues from source data</li>
+        </ul>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeSourcesPanel()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-success" id="modal-success">Facility added successfully!</div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script>
+    const API_BASE = '/api/v1';
+    let currentPage = 1;
+    let pageSize = 100;
+    let totalCount = 0;
+    let totalPages = 0;
+    let facilities = [];
+    let selectedId = null;
+
+    // Initialize map centered on Africa
+    const map = L.map('map').setView([2, 20], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Marker cluster group for all map markers
+    const clusterGroup = L.markerClusterGroup({
+      chunkedLoading: true,
+      maxClusterRadius: 50,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      disableClusteringAtZoom: 13,
+    });
+    map.addLayer(clusterGroup);
+
+    // Load countries for filter dropdown
+    async function loadCountries() {
+      const select = document.getElementById('filter-country');
+      try {
+        const resp = await fetch(`${API_BASE}/facilities?page=1&pageSize=500`);
+        const data = await resp.json();
+        const countries = [...new Set(data.data.map(f => f.country))].sort();
+        countries.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = c;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        console.error('Failed to load countries:', err);
+      }
+    }
+
+    // Build filter query string
+    function getFilterParams() {
+      const country = document.getElementById('filter-country').value;
+      const type = document.getElementById('filter-type').value;
+      const status = document.getElementById('filter-status').value;
+      const keyword = document.getElementById('filter-keyword').value.trim();
+      let params = '';
+      if (country) params += `&country=${encodeURIComponent(country)}`;
+      if (type) params += `&facilityType=${type}`;
+      if (status) params += `&operationalStatus=${status}`;
+      if (keyword) params += `&keyword=${encodeURIComponent(keyword)}`;
+      return params;
+    }
+
+    // Load map markers for the current filter (up to 5000 for clustering)
+    async function loadMapMarkers() {
+      const mapLoading = document.getElementById('map-loading');
+      mapLoading.classList.add('visible');
+
+      const filterParams = getFilterParams();
+      // Fetch up to 5000 facilities for map display
+      const url = `${API_BASE}/facilities?page=1&pageSize=500${filterParams}`;
+      
+      try {
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        clusterGroup.clearLayers();
+
+        const markers = [];
+        data.data.forEach(f => {
+          if (!f.geolocation) return;
+          markers.push(makeMarker(f));
+        });
+
+        clusterGroup.addLayers(markers);
+
+        // Also load additional pages for the map if there are more
+        if (data.pagination.totalPages > 1 && data.pagination.totalCount <= 5000) {
+          for (let page = 2; page <= data.pagination.totalPages; page++) {
+            const pageUrl = `${API_BASE}/facilities?page=${page}&pageSize=500${filterParams}`;
+            const pageResp = await fetch(pageUrl);
+            const pageData = await pageResp.json();
+            const pageMarkers = [];
+            pageData.data.forEach(f => {
+              if (!f.geolocation) return;
+              pageMarkers.push(makeMarker(f));
+            });
+            clusterGroup.addLayers(pageMarkers);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load map markers:', err);
+      } finally {
+        mapLoading.classList.remove('visible');
+      }
+    }
+
+    function getTypeColor(type) {
+      const colors = {
+        hospital: '#dc2626',
+        clinic: '#2563eb',
+        health_post: '#16a34a',
+        pharmacy: '#9333ea',
+        laboratory: '#f59e0b',
+        community_health_center: '#0891b2'
+      };
+      return colors[type] || '#6b7280';
+    }
+
+    function makeTooltip(f) {
+      const name = f.nameText || Object.values(f.names)[0];
+      const warning = f.staleIndicator ? '<br><span style="color:#dc2626;font-size:11px">⚠ Unverified data</span>' : '';
+      return `<b>${name}</b><br>${formatType(f.facilityType)} · ${f.country}${warning}`;
+    }
+
+    function makeMarker(f) {
+      const marker = L.circleMarker(
+        [f.geolocation.latitude, f.geolocation.longitude],
+        {
+          radius: 6,
+          fillColor: getTypeColor(f.facilityType),
+          color: f.staleIndicator ? '#94a3b8' : '#1e40af',
+          weight: f.staleIndicator ? 1 : 1.5,
+          opacity: 0.8,
+          fillOpacity: f.staleIndicator ? 0.4 : 0.7
+        }
+      );
+      marker.bindTooltip(makeTooltip(f), { direction: 'top' });
+      marker.on('click', () => selectFacilityFromMap(f));
+      return marker;
+    }
+
+    // Fetch facilities for the sidebar list
+    async function fetchFacilities() {
+      const filterParams = getFilterParams();
+      let url = `${API_BASE}/facilities?page=${currentPage}&pageSize=${pageSize}${filterParams}`;
+
+      const listEl = document.getElementById('facility-list');
+      listEl.innerHTML = '<div class="loading">Loading...</div>';
+
+      try {
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        facilities = data.data;
+        totalCount = data.pagination.totalCount;
+        totalPages = data.pagination.totalPages;
+        currentPage = data.pagination.currentPage;
+
+        document.getElementById('stats').textContent = `${totalCount.toLocaleString()} facilities`;
+        renderList();
+        renderPagination();
+      } catch (err) {
+        listEl.innerHTML = '<div class="empty-state"><p>Error loading facilities</p></div>';
+      }
+    }
+
+    function renderList() {
+      const listEl = document.getElementById('facility-list');
+
+      if (facilities.length === 0) {
+        listEl.innerHTML = '<div class="empty-state"><p>No facilities match your filters</p></div>';
+        return;
+      }
+
+      listEl.innerHTML = facilities.map(f => `
+        <div class="facility-card ${f.id === selectedId ? 'active' : ''}" onclick="selectFacility('${f.id}')">
+          <div class="name">${f.nameText || Object.values(f.names)[0] || 'Unknown'}</div>
+          <div class="meta">
+            <span class="badge-type">${formatType(f.facilityType)}</span>
+            <span class="badge-country">${f.country}</span>
+            ${f.beds ? `<span>${f.beds} beds</span>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderPagination() {
+      const paginationEl = document.getElementById('pagination');
+      if (totalCount === 0) {
+        paginationEl.style.display = 'none';
+        return;
+      }
+      paginationEl.style.display = 'flex';
+      document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages} (${totalCount.toLocaleString()} total)`;
+      document.getElementById('prev-btn').disabled = currentPage <= 1;
+      document.getElementById('next-btn').disabled = currentPage >= totalPages;
+    }
+
+    function selectFacility(id) {
+      selectedId = id;
+      const facility = facilities.find(f => f.id === id);
+      if (!facility) return;
+      renderList();
+      if (facility.geolocation) {
+        map.setView([facility.geolocation.latitude, facility.geolocation.longitude], 14);
+      }
+      showDetail(facility);
+    }
+
+    function selectFacilityFromMap(f) {
+      selectedId = f.id;
+      renderList();
+      showDetail(f);
+      // Scroll the list to show the selected card
+      const card = document.querySelector(`.facility-card.active`);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function showDetail(f) {
+      const panel = document.getElementById('detail-panel');
+      const content = document.getElementById('detail-content');
+
+      content.innerHTML = `
+        <div class="detail-header">
+          <h2>${f.nameText || Object.values(f.names)[0]}</h2>
+          <div class="subtitle">${f.city || ''} ${f.city ? '·' : ''} ${f.adminRegion} · ${f.country}</div>
+        </div>
+        <div class="detail-section">
+          <h4>General</h4>
+          <div class="detail-row"><span class="label">Type</span><span class="value">${formatType(f.facilityType)}</span></div>
+          <div class="detail-row"><span class="label">Status</span><span class="value">${formatStatus(f.operationalStatus)}</span></div>
+          <div class="detail-row"><span class="label">Ownership</span><span class="value">${f.ownership}</span></div>
+          ${f.beds ? `<div class="detail-row"><span class="label">Beds</span><span class="value">${f.beds.toLocaleString()}</span></div>` : ''}
+        </div>
+        <div class="detail-section">
+          <h4>Location</h4>
+          <div class="detail-row"><span class="label">Coordinates</span><span class="value">${f.geolocation ? `${f.geolocation.latitude.toFixed(4)}, ${f.geolocation.longitude.toFixed(4)}` : 'N/A'}</span></div>
+          <div class="detail-row"><span class="label">Region</span><span class="value">${f.adminRegion}</span></div>
+        </div>
+        ${f.contactInfo && Object.keys(f.contactInfo).length > 0 ? `
+        <div class="detail-section">
+          <h4>Contact</h4>
+          ${f.contactInfo.phone ? `<div class="detail-row"><span class="label">Phone</span><span class="value">${f.contactInfo.phone}</span></div>` : ''}
+          ${f.contactInfo.email ? `<div class="detail-row"><span class="label">Email</span><span class="value">${f.contactInfo.email}</span></div>` : ''}
+          ${f.contactInfo.website ? `<div class="detail-row"><span class="label">Website</span><span class="value"><a href="${f.contactInfo.website}" target="_blank">Visit</a></span></div>` : ''}
+        </div>` : ''}
+        <div class="detail-section">
+          <h4>Verification</h4>
+          <div class="detail-row"><span class="label">Status</span><span class="value">${formatVerification(f.verificationStatus)}</span></div>
+          <div class="detail-row"><span class="label">Data Freshness</span><span class="value ${f.staleIndicator ? 'stale' : 'fresh'}">${f.staleIndicator ? '⚠ Stale' : '✓ Current'}</span></div>
+          <div class="detail-row"><span class="label">Source</span><span class="value" style="font-size:11px">${f.verificationStatus === 'field_verified' ? 'Measured (HIGH Horizons/Cederberg)' : f.verificationStatus === 'self_reported' ? 'Self-reported' : 'WHO/KEMRI 2019'}</span></div>
+        </div>
+        ${renderEnergySection(f)}
+      `;
+
+      // Load emissions data for the selected facility
+      loadEmissions(f.id).then(html => {
+        const emEl = document.getElementById('emissions-section');
+        if (emEl) emEl.innerHTML = html;
+      });
+
+      panel.classList.add('visible');
+    }
+
+    function renderEnergySection(f) {
+      if (!f.energyProfile || f.energyProfile === 'unknown' || f.energyProfile.length === 0) {
+        return '<div class="detail-section"><h4>Energy Profile</h4><div class="detail-row"><span class="label">Status</span><span class="value stale">No data</span></div></div><div class="detail-section" id="emissions-section"><h4>Emissions</h4><div class="detail-row"><span class="label">Status</span><span class="value stale">No data</span></div></div>';
+      }
+      const sources = f.energyProfile.map(function(s) {
+        const consumption = s.consumptionKwhYear 
+          ? (s.consumptionKwhYear / 1000).toLocaleString(undefined, {maximumFractionDigits: 0}) + ' MWh/yr' 
+          : 'No consumption data';
+        return '<div class="detail-row"><span class="label">' + formatType(s.energyType) + '</span><span class="value">' + consumption + '</span></div>';
+      }).join('');
+      const totalMwh = f.energyProfile.reduce(function(sum, s) { return sum + (s.consumptionKwhYear || 0); }, 0) / 1000;
+      var totalRow = '';
+      if (totalMwh > 0) {
+        totalRow = '<div class="detail-row" style="border-top:1px solid #f1f5f9;margin-top:6px;padding-top:6px"><span class="label"><b>Total</b></span><span class="value"><b>' + totalMwh.toLocaleString(undefined, {maximumFractionDigits: 0}) + ' MWh/yr</b></span></div>';
+      }
+      return '<div class="detail-section"><h4>Energy Profile</h4>' + sources + totalRow + '</div><div class="detail-section" id="emissions-section"><h4>Emissions</h4><div class="loading" style="padding:8px">Loading...</div></div>';
+    }
+
+    async function loadEmissions(facilityId) {
+      try {
+        // First try to get actual recorded emissions
+        const recordedResp = await fetch(API_BASE + '/facilities/' + facilityId + '/emissions');
+        if (recordedResp.ok) {
+          const recordedData = await recordedResp.json();
+          if (recordedData.data && recordedData.data.length > 0) {
+            var html = '<h4>GHG Emissions (Recorded)</h4>';
+            var total = 0;
+            recordedData.data.forEach(function(e) {
+              var scopeLabel = e.emissionScope === 'scope_1' ? 'Scope 1 (Direct/Diesel)' : e.emissionScope === 'scope_2' ? 'Scope 2 (Grid Electricity)' : 'Scope 3 (Supply Chain)';
+              html += '<div class="detail-row"><span class="label">' + scopeLabel + '</span><span class="value">' + e.valueTonnesCo2e.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' t CO\u2082e</span></div>';
+              total += e.valueTonnesCo2e;
+            });
+            if (recordedData.data.length > 1) {
+              html += '<div class="detail-row" style="border-top:1px solid #f1f5f9;margin-top:6px;padding-top:6px"><span class="label"><b>Total</b></span><span class="value"><b>' + total.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' t CO\u2082e/yr</b></span></div>';
+            }
+            html += '<div style="font-size:10px;color:#94a3b8;margin-top:4px">Year: ' + recordedData.data[0].reportingYear + '</div>';
+            html += '<div style="font-size:10px;color:#d97706;margin-top:2px">\u26a0 Scope 1 & 2 only. Scope 3 (supply chain, waste, transport) not included.</div>';
+            return html;
+          }
+        }
+
+        // Fall back to estimates if no recorded data
+        var gridHtml = '';
+        var dieselHtml = '';
+        var totalTonnes = 0;
+
+        var resp = await fetch(API_BASE + '/facilities/' + facilityId + '/emissions/estimate?energySourceType=grid_electricity&year=2023');
+        if (resp.ok) {
+          var data = await resp.json();
+          var est = data.data;
+          totalTonnes += est.estimatedTonnesCo2e;
+          gridHtml = '<div class="detail-row"><span class="label">Scope 2 (Grid) est.</span><span class="value">' + est.estimatedTonnesCo2e.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' t CO\u2082e</span></div>';
+        }
+
+        var dieselResp = await fetch(API_BASE + '/facilities/' + facilityId + '/emissions/estimate?energySourceType=diesel_generator&year=2023');
+        if (dieselResp.ok) {
+          var data2 = await dieselResp.json();
+          var est2 = data2.data;
+          totalTonnes += est2.estimatedTonnesCo2e;
+          dieselHtml = '<div class="detail-row"><span class="label">Scope 1 (Diesel) est.</span><span class="value">' + est2.estimatedTonnesCo2e.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' t CO\u2082e</span></div>';
+        }
+
+        if (gridHtml || dieselHtml) {
+          var totalHtml2 = '';
+          if (gridHtml && dieselHtml) {
+            totalHtml2 = '<div class="detail-row" style="border-top:1px solid #f1f5f9;margin-top:6px;padding-top:6px"><span class="label"><b>Total</b></span><span class="value"><b>' + totalTonnes.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' t CO\u2082e/yr</b></span></div>';
+          }
+          return '<h4>GHG Emissions (Estimated)</h4>' + dieselHtml + gridHtml + totalHtml2 + '<div style="font-size:10px;color:#94a3b8;margin-top:4px">Based on energy consumption \u00d7 emission factors</div><div style="font-size:10px;color:#d97706;margin-top:2px">\u26a0 Scope 1 & 2 only. Scope 3 (supply chain, waste, transport) not included.</div>';
+        }
+
+        return '<h4>Emissions</h4><div class="detail-row"><span class="label">Data</span><span class="value stale">Unavailable</span></div>';
+      } catch(e) {
+        return '<h4>Emissions</h4><div class="detail-row"><span class="label">Data</span><span class="value stale">Unavailable</span></div>';
+      }
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-panel').classList.remove('visible');
+      selectedId = null;
+      renderList();
+    }
+
+    function applyFilters() {
+      currentPage = 1;
+      fetchFacilities();
+      loadMapMarkers();
+    }
+
+    function resetFilters() {
+      document.getElementById('filter-country').value = '';
+      document.getElementById('filter-type').value = '';
+      document.getElementById('filter-status').value = '';
+      document.getElementById('filter-keyword').value = '';
+      currentPage = 1;
+      fetchFacilities();
+      loadMapMarkers();
+    }
+
+    function prevPage() { if (currentPage > 1) { currentPage--; fetchFacilities(); } }
+    function nextPage() { if (currentPage < totalPages) { currentPage++; fetchFacilities(); } }
+
+    function formatType(t) { return (t || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
+    function formatStatus(s) { return (s || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
+    function formatVerification(v) { return (v || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
+
+    function toggleSidebar() {
+      const layout = document.getElementById('layout');
+      const btn = document.getElementById('sidebar-toggle');
+      layout.classList.toggle('sidebar-hidden');
+      if (layout.classList.contains('sidebar-hidden')) {
+        btn.style.left = '8px';
+        btn.innerHTML = '☰';
+      } else {
+        btn.style.left = '328px';
+        btn.innerHTML = '✕';
+      }
+      setTimeout(() => map.invalidateSize(), 300);
+    }
+
+    function toggleLegend() {
+      document.getElementById('map-legend').classList.toggle('collapsed');
+    }
+
+    function openSourcesPanel() {
+      document.getElementById('sources-modal').classList.add('visible');
+    }
+    function closeSourcesPanel() {
+      document.getElementById('sources-modal').classList.remove('visible');
+    }
+    document.getElementById('sources-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeSourcesPanel();
+    });
+
+    document.getElementById('filter-keyword').addEventListener('keydown', e => {
+      if (e.key === 'Enter') applyFilters();
+    });
+
+    // Initialize
+    loadCountries();
+    fetchFacilities();
+    loadMapMarkers();
+
+    // --- Add Facility Modal ---
+    function openAddFacilityModal() {
+      const modal = document.getElementById('add-facility-modal');
+      const countrySelect = document.getElementById('af-country');
+      const tokenPrompt = document.getElementById('token-prompt');
+      const errorsEl = document.getElementById('modal-errors');
+
+      // Populate country dropdown from the filter select
+      const filterCountry = document.getElementById('filter-country');
+      countrySelect.innerHTML = '';
+      Array.from(filterCountry.options).forEach(opt => {
+        if (opt.value) {
+          const newOpt = document.createElement('option');
+          newOpt.value = opt.value;
+          newOpt.textContent = opt.textContent;
+          countrySelect.appendChild(newOpt);
+        }
+      });
+
+      // Show token prompt if no token stored
+      const storedToken = localStorage.getItem('admin_jwt_token');
+      if (!storedToken) {
+        tokenPrompt.classList.add('visible');
+      } else {
+        tokenPrompt.classList.remove('visible');
+      }
+
+      // Reset form state
+      document.getElementById('add-facility-form').reset();
+      errorsEl.classList.remove('visible');
+      errorsEl.textContent = '';
+
+      modal.classList.add('visible');
+    }
+
+    function closeAddFacilityModal() {
+      document.getElementById('add-facility-modal').classList.remove('visible');
+    }
+
+    // Close modal on overlay click
+    document.getElementById('add-facility-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeAddFacilityModal();
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeAddFacilityModal();
+    });
+
+    async function submitFacility(e) {
+      e.preventDefault();
+      const errorsEl = document.getElementById('modal-errors');
+      errorsEl.classList.remove('visible');
+      errorsEl.textContent = '';
+
+      // Get or prompt for token
+      let token = localStorage.getItem('admin_jwt_token');
+      if (!token) {
+        const tokenInput = document.getElementById('af-token').value.trim();
+        if (!tokenInput) {
+          errorsEl.textContent = 'Please provide a JWT token for authentication.';
+          errorsEl.classList.add('visible');
+          return;
+        }
+        token = tokenInput;
+        localStorage.setItem('admin_jwt_token', token);
+      }
+
+      // Build payload
+      const name = document.getElementById('af-name').value.trim();
+      const facilityType = document.getElementById('af-type').value;
+      const country = document.getElementById('af-country').value;
+      const adminRegion = document.getElementById('af-region').value.trim();
+      const city = document.getElementById('af-city').value.trim();
+      const latitude = parseFloat(document.getElementById('af-lat').value);
+      const longitude = parseFloat(document.getElementById('af-lng').value);
+      const operationalStatus = document.getElementById('af-status').value;
+      const ownership = document.getElementById('af-ownership').value;
+      const beds = document.getElementById('af-beds').value;
+      const phone = document.getElementById('af-phone').value.trim();
+      const email = document.getElementById('af-email').value.trim();
+
+      const payload = {
+        names: { en: name },
+        facilityType,
+        country,
+        adminRegion,
+        geolocation: { latitude, longitude },
+        operationalStatus,
+        ownership
+      };
+
+      if (city) payload.city = city;
+      if (beds) payload.beds = parseInt(beds, 10);
+
+      const contactInfo = {};
+      if (phone) contactInfo.phone = phone;
+      if (email) contactInfo.email = email;
+      if (Object.keys(contactInfo).length > 0) payload.contactInfo = contactInfo;
+
+      try {
+        const resp = await fetch(`${API_BASE}/facilities`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (resp.ok) {
+          closeAddFacilityModal();
+          showSuccess('Facility added successfully!');
+          // Refresh data
+          fetchFacilities();
+          loadMapMarkers();
+        } else {
+          const data = await resp.json();
+          // Handle 401 - token might be invalid
+          if (resp.status === 401) {
+            localStorage.removeItem('admin_jwt_token');
+            document.getElementById('token-prompt').classList.add('visible');
+            errorsEl.textContent = 'Authentication failed. Please provide a valid admin token.';
+            errorsEl.classList.add('visible');
+            return;
+          }
+          // Show validation errors
+          let errorMsg = '';
+          if (data.errors && Array.isArray(data.errors)) {
+            errorMsg = data.errors.map(err => `${err.field ? err.field + ': ' : ''}${err.message}`).join('\n');
+          } else if (data.error) {
+            errorMsg = data.error;
+          } else if (data.message) {
+            errorMsg = data.message;
+          } else {
+            errorMsg = 'An error occurred while creating the facility.';
+          }
+          errorsEl.textContent = errorMsg;
+          errorsEl.style.whiteSpace = 'pre-wrap';
+          errorsEl.classList.add('visible');
+        }
+      } catch (err) {
+        errorsEl.textContent = 'Network error. Please try again.';
+        errorsEl.classList.add('visible');
+      }
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('modal-success');
+      el.textContent = msg;
+      el.classList.add('visible');
+      setTimeout(() => el.classList.remove('visible'), 3000);
+    }
+  </script>
+</body>
+</html>

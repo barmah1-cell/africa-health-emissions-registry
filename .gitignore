@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.env
+*.log
+data/sub-saharan_health_facilities.xlsx
+data/flagged-facilities.csv

@@ -1,0 +1,102 @@
+name,facility_type,country,admin_region,city,latitude,longitude,operational_status,ownership,phone,email,website,beds
+Adabraka Polyclinic,clinic,Ghana,Greater Accra Region,Accra,5.5558,-0.2050,operational,public,+233302224401,,,20
+Mamprobi Polyclinic,clinic,Ghana,Greater Accra Region,Accra,5.5372,-0.2336,operational,public,+233302229011,,,15
+La General Hospital,clinic,Ghana,Greater Accra Region,Accra,5.5569,-0.1703,operational,public,+233302772341,,,30
+Achimota Hospital,clinic,Ghana,Greater Accra Region,Accra,5.6192,-0.2217,operational,public,+233302401123,,,40
+Tema General Hospital,hospital,Ghana,Greater Accra Region,Tema,5.6667,-0.0167,operational,public,+233303212381,,,150
+Kaneshie Polyclinic,clinic,Ghana,Greater Accra Region,Accra,5.5564,-0.2342,operational,public,+233302227711,,,15
+Maamobi General Hospital,clinic,Ghana,Greater Accra Region,Accra,5.5719,-0.2150,operational,public,+233302233841,,,50
+LEKMA Hospital,clinic,Ghana,Greater Accra Region,Accra,5.6167,-0.1083,operational,public,+233302818114,,,30
+Pantang Hospital,hospital,Ghana,Greater Accra Region,Accra,5.7000,-0.1667,operational,public,+233302501921,,,500
+Ga South Municipal Hospital,clinic,Ghana,Greater Accra Region,Accra,5.5486,-0.3247,operational,public,+233302308441,,,30
+Agogo Presbyterian Hospital,hospital,Ghana,Ashanti Region,Agogo,6.8000,-1.0833,operational,private,+233322291011,,,200
+Bekwai Municipal Hospital,clinic,Ghana,Ashanti Region,Bekwai,6.4500,-1.5833,operational,public,+233322091341,,,60
+Konongo-Odumasi Government Hospital,hospital,Ghana,Ashanti Region,Konongo,6.6167,-1.2167,operational,public,+233322293501,,,80
+Manhyia District Hospital,clinic,Ghana,Ashanti Region,Kumasi,6.7167,-1.6167,operational,public,+233322024811,,,50
+Tafo Government Hospital,clinic,Ghana,Ashanti Region,Kumasi,6.7333,-1.5833,operational,public,+233322022181,,,40
+Suntreso Government Hospital,clinic,Ghana,Ashanti Region,Kumasi,6.6833,-1.6500,operational,public,+233322025611,,,45
+Kumasi South Hospital,clinic,Ghana,Ashanti Region,Kumasi,6.6500,-1.6333,operational,public,+233322023791,,,40
+Ejisu Government Hospital,clinic,Ghana,Ashanti Region,Ejisu,6.7333,-1.4667,operational,public,+233322092201,,,35
+Nkawie-Toase Government Hospital,clinic,Ghana,Ashanti Region,Nkawie,6.5500,-1.7500,operational,public,+233322097011,,,40
+Obuasi Government Hospital,hospital,Ghana,Ashanti Region,Obuasi,6.2000,-1.6667,operational,public,+233322440121,,,100
+CHPS Compound Nima,health_post,Ghana,Greater Accra Region,Accra,5.5750,-0.2083,operational,public,,,,,
+CHPS Compound Madina,health_post,Ghana,Greater Accra Region,Madina,5.6667,-0.1667,operational,public,,,,,
+CHPS Compound Teshie,health_post,Ghana,Greater Accra Region,Accra,5.5833,-0.1000,operational,public,,,,,
+CHPS Compound Nungua,health_post,Ghana,Greater Accra Region,Accra,5.5917,-0.0750,operational,public,,,,,
+CHPS Compound Dansoman,health_post,Ghana,Greater Accra Region,Accra,5.5333,-0.2583,operational,public,,,,,
+CHPS Compound Kpone,health_post,Ghana,Greater Accra Region,Tema,5.6833,0.0333,operational,public,,,,,
+CHPS Compound Ashaiman,health_post,Ghana,Greater Accra Region,Ashaiman,5.6833,-0.0333,operational,public,,,,,
+CHPS Compound Dodowa,health_post,Ghana,Greater Accra Region,Dodowa,5.8833,-0.0833,operational,public,,,,,
+CHPS Compound Kasoa,health_post,Ghana,Central Region,Kasoa,5.5333,-0.4167,operational,public,,,,,
+CHPS Compound Pokuase,health_post,Ghana,Greater Accra Region,Pokuase,5.6833,-0.2833,operational,public,,,,,
+Ernest Chemists Pharmacy Osu,pharmacy,Ghana,Greater Accra Region,Accra,5.5500,-0.1750,operational,private,+233302773411,,,0
+Kama Health Pharmacy,pharmacy,Ghana,Greater Accra Region,Accra,5.5708,-0.2017,operational,private,+233302242911,,,0
+Alpha Pharmacy Kumasi,pharmacy,Ghana,Ashanti Region,Kumasi,6.6917,-1.6250,operational,private,+233322024511,,,0
+Dannex Pharmacy Accra,pharmacy,Ghana,Greater Accra Region,Accra,5.5611,-0.2153,operational,private,+233302228411,,,0
+HealthPlus Pharmacy Tema,pharmacy,Ghana,Greater Accra Region,Tema,5.6583,-0.0167,operational,private,+233303211111,,,0
+Nyaho Medical Centre,clinic,Ghana,Greater Accra Region,Accra,5.5919,-0.1736,operational,private,+233302775341,info@nyahomedical.com,https://nyahomedical.com,30
+The Trust Hospital,hospital,Ghana,Greater Accra Region,Accra,5.5908,-0.1878,operational,private,+233302761974,,https://thetrusthospital.com,80
+Lister Hospital,clinic,Ghana,Greater Accra Region,Accra,5.5706,-0.1872,operational,private,+233302812325,,https://listerhospital.com.gh,25
+Euracare Advanced Diagnostics,clinic,Ghana,Greater Accra Region,Accra,5.5864,-0.1781,operational,private,+233551000100,,https://euracare.com.gh,0
+Lapaz Community Hospital,clinic,Ghana,Greater Accra Region,Accra,5.6083,-0.2417,operational,public,+233302306012,,,20
+Kibera South Health Centre,clinic,Kenya,Nairobi County,Nairobi,-1.3128,36.7869,operational,public,+254202721001,,,10
+Langata Health Centre,clinic,Kenya,Nairobi County,Nairobi,-1.3486,36.7528,operational,public,+254202721002,,,8
+Eastleigh Health Centre,clinic,Kenya,Nairobi County,Nairobi,-1.2728,36.8503,operational,public,+254202721003,,,10
+Mathare North Health Centre,clinic,Kenya,Nairobi County,Nairobi,-1.2583,36.8589,operational,public,+254202721004,,,6
+Dandora Health Centre,clinic,Kenya,Nairobi County,Nairobi,-1.2547,36.9006,operational,public,+254202721005,,,8
+Kayole Health Centre,clinic,Kenya,Nairobi County,Nairobi,-1.2722,36.9078,operational,public,+254202721006,,,8
+Riruta Health Centre,clinic,Kenya,Nairobi County,Nairobi,-1.3036,36.7322,operational,public,+254202721007,,,6
+Kasarani Health Centre,clinic,Kenya,Nairobi County,Nairobi,-1.2167,36.8972,operational,public,+254202721008,,,8
+Westlands Health Centre,clinic,Kenya,Nairobi County,Nairobi,-1.2639,36.8039,operational,public,+254202721009,,,6
+Dagoretti Health Centre,clinic,Kenya,Nairobi County,Nairobi,-1.2889,36.7478,operational,public,+254202721010,,,6
+Ngong Hills Health Centre,health_post,Kenya,Kajiado County,Ngong,-1.3611,36.6583,operational,public,,,,,
+Ongata Rongai Health Post,health_post,Kenya,Kajiado County,Rongai,-1.3917,36.7667,operational,public,,,,,
+Kitengela Health Centre,clinic,Kenya,Kajiado County,Kitengela,-1.4722,36.9611,operational,public,+254452100111,,,10
+Limuru Health Centre,clinic,Kenya,Kiambu County,Limuru,-1.1083,36.6500,operational,public,+254662100222,,,8
+Githunguri Health Centre,clinic,Kenya,Kiambu County,Githunguri,-1.0500,36.7667,operational,public,+254662100333,,,6
+Ruiru Health Centre,clinic,Kenya,Kiambu County,Ruiru,-1.1500,36.9583,operational,public,+254672100444,,,8
+Gatundu Health Centre,clinic,Kenya,Kiambu County,Gatundu,-1.0000,36.9167,operational,public,+254672100555,,,6
+Karuri Health Centre,clinic,Kenya,Kiambu County,Karuri,-1.1667,36.7833,operational,public,+254662100666,,,6
+Mwiki Health Centre,health_post,Kenya,Nairobi County,Nairobi,-1.1917,36.9167,operational,public,,,,,
+Pipeline Health Post,health_post,Kenya,Nairobi County,Nairobi,-1.3083,36.8917,operational,public,,,,,
+Nairobi Hospital,hospital,Kenya,Nairobi County,Nairobi,-1.2942,36.7997,operational,private,+254202845000,info@nairobihospital.org,https://nairobihospital.org,350
+Karen Hospital,hospital,Kenya,Nairobi County,Nairobi,-1.3222,36.7111,operational,private,+254208066000,,https://karenhospital.org,102
+MP Shah Hospital,hospital,Kenya,Nairobi County,Nairobi,-1.2703,36.8125,operational,private,+254204291000,,https://mpshahhosp.org,200
+Gertrude's Children Hospital,hospital,Kenya,Nairobi County,Nairobi,-1.2619,36.7931,operational,private,+254207206000,,https://gertrudeshospital.org,100
+Avenue Healthcare Parklands,clinic,Kenya,Nairobi County,Nairobi,-1.2583,36.8069,operational,private,+254203740660,,https://avenuehealthcare.com,40
+Mediheal Hospital Eastleigh,hospital,Nigeria,Lagos State,Lagos,6.4583,3.3917,operational,private,+2348091234567,,,80
+Reddington Hospital Lagos,hospital,Nigeria,Lagos State,Lagos,6.4528,3.4222,operational,private,+2348037123456,,https://reddingtonhospital.com,50
+EKO Hospital Lagos,hospital,Nigeria,Lagos State,Lagos,6.4389,3.4750,operational,private,+2348038765432,,https://ekohospital.com,100
+First Consultants Medical Centre,clinic,Nigeria,Lagos State,Lagos,6.4500,3.4333,operational,private,+2348023456789,,,20
+Lagoon Hospital Lagos,hospital,Nigeria,Lagos State,Lagos,6.4361,3.4472,operational,private,+2348067890123,,https://lagoonhospitals.com,60
+Island Maternity Hospital,clinic,Nigeria,Lagos State,Lagos,6.4556,3.4083,operational,public,+2342634567,,,30
+Mushin General Hospital,hospital,Nigeria,Lagos State,Lagos,6.5333,3.3500,operational,public,+2348081111111,,,120
+Alimosho General Hospital,hospital,Nigeria,Lagos State,Lagos,6.6000,3.2833,operational,public,+2348082222222,,,100
+Badagry General Hospital,hospital,Nigeria,Lagos State,Lagos,6.4167,2.8833,operational,public,+2348083333333,,,80
+Ikorodu General Hospital,hospital,Nigeria,Lagos State,Lagos,6.6167,3.5000,operational,public,+2348084444444,,,100
+PHC Surulere,health_post,Nigeria,Lagos State,Lagos,6.5000,3.3500,operational,public,,,,,
+PHC Agege,health_post,Nigeria,Lagos State,Lagos,6.6167,3.3167,operational,public,,,,,
+PHC Oshodi,health_post,Nigeria,Lagos State,Lagos,6.5500,3.3500,operational,public,,,,,
+PHC Ikeja,health_post,Nigeria,Lagos State,Lagos,6.5833,3.3500,operational,public,,,,,
+PHC Ikoyi,health_post,Nigeria,Lagos State,Lagos,6.4500,3.4333,operational,public,,,,,
+MedPlus Pharmacy Victoria Island,pharmacy,Nigeria,Lagos State,Lagos,6.4278,3.4222,operational,private,+2348055123456,,,0
+HealthPlus Pharmacy Ikeja,pharmacy,Nigeria,Lagos State,Lagos,6.5917,3.3417,operational,private,+2348056789012,,,0
+Alpha Pharmacy Lekki,pharmacy,Nigeria,Lagos State,Lagos,6.4333,3.4833,operational,private,+2348057890123,,,0
+Medina Clinic Kigali,clinic,Rwanda,Kigali Province,Kigali,-1.9500,29.8750,operational,private,+250788111222,,,10
+Polyclinique du Plateau,clinic,Rwanda,Kigali Province,Kigali,-1.9458,29.8592,operational,private,+250788222333,,,15
+Gahanga Health Centre,clinic,Rwanda,Kigali Province,Kigali,-2.0167,29.8833,operational,public,+250788333444,,,8
+Kicukiro Health Centre,clinic,Rwanda,Kigali Province,Kigali,-1.9833,29.8750,operational,public,+250788444555,,,10
+Remera Health Centre,clinic,Rwanda,Kigali Province,Kigali,-1.9417,30.1000,operational,public,+250788555666,,,8
+Nyarugunga Health Post,health_post,Rwanda,Kigali Province,Kigali,-1.9833,29.8500,operational,public,,,,,
+Kimironko Health Post,health_post,Rwanda,Kigali Province,Kigali,-1.9250,30.1167,operational,public,,,,,
+Chris Hani Baragwanath Clinic,clinic,South Africa,Gauteng,Johannesburg,-26.2700,27.9400,operational,public,+27119339111,,,20
+Hillbrow Community Health Centre,clinic,South Africa,Gauteng,Johannesburg,-26.1928,28.0456,operational,public,+27117253573,,,15
+Alexandra Health Centre,clinic,South Africa,Gauteng,Johannesburg,-26.1028,28.1000,operational,public,+27118827575,,,10
+Soweto Community Health Centre,clinic,South Africa,Gauteng,Johannesburg,-26.2500,27.8667,operational,public,+27119336000,,,12
+Zola Clinic,health_post,South Africa,Gauteng,Johannesburg,-26.2500,27.8833,operational,public,,,,,
+Diepkloof Clinic,health_post,South Africa,Gauteng,Johannesburg,-26.2333,27.9333,operational,public,,,,,
+Orlando Clinic,health_post,South Africa,Gauteng,Johannesburg,-26.2333,27.9167,operational,public,,,,,
+Meadowlands Clinic,health_post,South Africa,Gauteng,Johannesburg,-26.2167,27.9000,operational,public,,,,,
+Lenasia South Clinic,health_post,South Africa,Gauteng,Johannesburg,-26.3500,27.8500,operational,public,,,,,
+Clicks Pharmacy Sandton,pharmacy,South Africa,Gauteng,Johannesburg,-26.1000,28.0667,operational,private,+27113262000,,,0
+Dis-Chem Pharmacy Rosebank,pharmacy,South Africa,Gauteng,Johannesburg,-26.1500,28.0500,operational,private,+27114476737,,,0

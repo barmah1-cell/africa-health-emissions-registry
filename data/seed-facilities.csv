@@ -1,0 +1,81 @@
+name,facility_type,country,admin_region,city,latitude,longitude,operational_status,ownership,phone,email,website,beds
+Kenyatta National Hospital,hospital,Kenya,Nairobi County,Nairobi,-1.3010,36.8065,operational,public,+254202726300,info@knh.or.ke,https://knh.or.ke,1800
+Moi Teaching and Referral Hospital,hospital,Kenya,Uasin Gishu County,Eldoret,0.5143,35.2783,operational,public,+254532033471,info@mtrh.go.ke,,800
+Aga Khan University Hospital Nairobi,hospital,Kenya,Nairobi County,Nairobi,-1.2614,36.8126,operational,private,+254203662000,info@aku.edu,https://hospitals.aku.edu,254
+Mama Lucy Kibaki Hospital,hospital,Kenya,Nairobi County,Nairobi,-1.2778,36.8983,operational,public,+254204956000,,,120
+Coast General Teaching and Referral Hospital,hospital,Kenya,Mombasa County,Mombasa,-4.0529,39.6682,operational,public,+254412314201,,,300
+Machakos Level 5 Hospital,hospital,Kenya,Machakos County,Machakos,-1.5228,37.2634,operational,public,+254442021389,,,200
+Kisumu County Hospital,hospital,Kenya,Kisumu County,Kisumu,-0.0917,34.7680,operational,public,+254572024141,,,150
+Nakuru Level 5 Hospital,hospital,Kenya,Nakuru County,Nakuru,-0.2833,36.0667,operational,public,+254512212831,,,300
+Garissa County Referral Hospital,hospital,Kenya,Garissa County,Garissa,-0.4532,39.6461,operational,public,+254462103274,,,120
+Nyeri County Referral Hospital,hospital,Kenya,Nyeri County,Nyeri,-0.4167,36.9500,operational,public,+254612030371,,,200
+Lagos University Teaching Hospital,hospital,Nigeria,Lagos State,Lagos,6.5177,3.4083,operational,public,+2341774660,,https://luth.gov.ng,761
+National Hospital Abuja,hospital,Nigeria,Federal Capital Territory,Abuja,9.0372,7.4897,operational,public,+2349461750,,https://nationalhospitalabuja.net,500
+University College Hospital Ibadan,hospital,Nigeria,Oyo State,Ibadan,7.4015,3.9073,operational,public,+2342241768,,,850
+Ahmadu Bello University Teaching Hospital,hospital,Nigeria,Kaduna State,Zaria,11.0801,7.7102,operational,public,+2346970761,,,500
+Lagos State University Teaching Hospital,hospital,Nigeria,Lagos State,Lagos,6.5900,3.3167,operational,public,+2349055593,,,540
+University of Benin Teaching Hospital,hospital,Nigeria,Edo State,Benin City,6.3350,5.6037,operational,public,+2348184556,,,700
+Federal Medical Centre Abeokuta,hospital,Nigeria,Ogun State,Abeokuta,7.1608,3.3483,operational,public,+2342240825,,,250
+National Orthopaedic Hospital Lagos,hospital,Nigeria,Lagos State,Lagos,6.4412,3.4205,operational,public,+2347740690,,,300
+General Hospital Lagos Island,hospital,Nigeria,Lagos State,Lagos,6.4549,3.4089,operational,public,+2342632180,,,200
+Jos University Teaching Hospital,hospital,Nigeria,Plateau State,Jos,9.8965,8.8583,operational,public,+2347361298,,,520
+King Faisal Hospital Kigali,hospital,Rwanda,Kigali Province,Kigali,-1.9567,29.8656,operational,public,+250788707070,info@kfh.rw,https://kfh.rw,200
+Centre Hospitalier Universitaire de Kigali,hospital,Rwanda,Kigali Province,Kigali,-1.9442,29.8554,operational,public,+250788862200,info@chuk.rw,,500
+Butaro District Hospital,hospital,Rwanda,Northern Province,Burera,-1.4356,29.8289,operational,public,+250788305632,,,150
+Kibagabaga District Hospital,hospital,Rwanda,Kigali Province,Kigali,-1.9292,30.0917,operational,public,+250788868044,,,200
+Muhima District Hospital,hospital,Rwanda,Kigali Province,Kigali,-1.9503,29.8528,operational,public,+250788303632,,,100
+Ruhengeri Hospital,hospital,Rwanda,Northern Province,Musanze,-1.4972,29.6350,operational,public,+250788462291,,,250
+Byumba District Hospital,hospital,Rwanda,Northern Province,Gicumbi,-1.5800,29.9717,operational,public,+250788304732,,,120
+Kabgayi District Hospital,hospital,Rwanda,Southern Province,Muhanga,-2.1000,29.7700,operational,public,+250788305012,,,200
+Nyanza District Hospital,hospital,Rwanda,Southern Province,Nyanza,-2.3533,29.7500,operational,public,+250788305412,,,100
+Gisenyi District Hospital,hospital,Rwanda,Western Province,Rubavu,-1.7080,29.2560,operational,public,+250788462201,,,180
+Korle Bu Teaching Hospital,hospital,Ghana,Greater Accra Region,Accra,5.5347,1.7869,operational,public,+233302665401,info@kfrg.org,,1600
+Komfo Anokye Teaching Hospital,hospital,Ghana,Ashanti Region,Kumasi,6.6942,1.6244,operational,public,+233322022301,,https://kfrg.org,1000
+Cape Coast Teaching Hospital,hospital,Ghana,Central Region,Cape Coast,5.1164,1.2464,operational,public,+233332132094,,,400
+Tamale Teaching Hospital,hospital,Ghana,Northern Region,Tamale,9.4075,0.8479,operational,public,+233362022401,,,420
+Ridge Hospital,hospital,Ghana,Greater Accra Region,Accra,5.5603,0.1867,operational,public,+233302223225,,,200
+37 Military Hospital,hospital,Ghana,Greater Accra Region,Accra,5.5900,0.1717,operational,public,+233302765891,,,400
+Effia Nkwanta Regional Hospital,hospital,Ghana,Western Region,Sekondi-Takoradi,4.9406,1.7269,operational,public,+233312032911,,,250
+Ho Teaching Hospital,hospital,Ghana,Volta Region,Ho,6.6012,0.4592,operational,public,+233362025112,,,300
+Sunyani Regional Hospital,hospital,Ghana,Bono Region,Sunyani,7.3350,2.3300,operational,public,+233352027111,,,200
+Bolgatanga Regional Hospital,hospital,Ghana,Upper East Region,Bolgatanga,10.7878,0.8517,operational,public,+233382022311,,,150
+Chris Hani Baragwanath Hospital,hospital,South Africa,Gauteng,Johannesburg,-26.2631,27.9369,operational,public,+27119338000,,,3200
+Groote Schuur Hospital,hospital,South Africa,Western Cape,Cape Town,-33.9411,18.4636,operational,public,+27214044111,,,893
+Tygerberg Hospital,hospital,South Africa,Western Cape,Cape Town,-33.9050,18.6047,operational,public,+27219389111,,,1300
+Steve Biko Academic Hospital,hospital,South Africa,Gauteng,Pretoria,-25.7267,28.2006,operational,public,+27123541000,,,832
+Inkosi Albert Luthuli Central Hospital,hospital,South Africa,KwaZulu-Natal,Durban,-29.8417,30.9833,operational,public,+27312401000,,,846
+Charlotte Maxeke Johannesburg Academic Hospital,hospital,South Africa,Gauteng,Johannesburg,-26.1744,28.0439,operational,public,+27114891000,,,1088
+King Edward VIII Hospital,hospital,South Africa,KwaZulu-Natal,Durban,-29.8633,31.0011,operational,public,+27313604279,,,900
+Nelson Mandela Academic Hospital,hospital,South Africa,Eastern Cape,Mthatha,-31.5889,28.7708,operational,public,+27475022000,,,700
+Universitas Academic Hospital,hospital,South Africa,Free State,Bloemfontein,-29.1167,26.2056,operational,public,+27514053011,,,650
+Red Cross War Memorial Children Hospital,hospital,South Africa,Western Cape,Cape Town,-33.9447,18.4622,operational,public,+27216585000,,,273
+Mulago National Referral Hospital,hospital,Uganda,Central Region,Kampala,0.3389,32.5767,operational,public,+256414554001,,,1500
+Muhimbili National Hospital,hospital,Tanzania,Dar es Salaam Region,Dar es Salaam,-6.8028,39.2767,operational,public,+255222151367,,,1500
+University Teaching Hospital Lusaka,hospital,Zambia,Lusaka Province,Lusaka,-15.3958,28.3239,operational,public,+260211252641,,,1655
+Queen Elizabeth Central Hospital,hospital,Malawi,Southern Region,Blantyre,-15.7881,35.0219,operational,public,+265111630222,,,1000
+Kamuzu Central Hospital,hospital,Malawi,Central Region,Lilongwe,-13.9628,33.7817,operational,public,+265111756666,,,700
+Parirenyatwa Group of Hospitals,hospital,Zimbabwe,Harare Province,Harare,-17.7917,31.0456,operational,public,+263242701541,,,1800
+Black Lion Hospital,hospital,Ethiopia,Addis Ababa,Addis Ababa,9.0353,38.7500,operational,public,+251111239722,,,700
+Kenyatta University Teaching Hospital,hospital,Kenya,Nairobi County,Nairobi,-1.1842,36.9375,operational,public,+254208710901,,,200
+Pumwani Maternity Hospital,hospital,Kenya,Nairobi County,Nairobi,-1.2750,36.8539,operational,public,+254203530042,,,358
+Kiambu Level 5 Hospital,hospital,Kenya,Kiambu County,Kiambu,-1.1728,36.8333,operational,public,+254672000333,,,200
+Thika Level 5 Hospital,hospital,Kenya,Kiambu County,Thika,-1.0333,37.0667,operational,public,+254672000444,,,200
+Embu Level 5 Hospital,hospital,Kenya,Embu County,Embu,-0.5167,37.4500,operational,public,+254682000555,,,200
+Meru Level 5 Hospital,hospital,Kenya,Meru County,Meru,0.0500,37.6500,operational,public,+254642000666,,,200
+Kakamega County General Hospital,hospital,Kenya,Kakamega County,Kakamega,0.2833,34.7500,operational,public,+254562000777,,,200
+Bungoma County Referral Hospital,hospital,Kenya,Bungoma County,Bungoma,0.5667,34.5667,operational,public,+254552000888,,,150
+Vihiga County Referral Hospital,hospital,Kenya,Vihiga County,Vihiga,0.0917,34.7333,operational,public,+254572000999,,,80
+Siaya County Referral Hospital,hospital,Kenya,Siaya County,Siaya,0.0611,34.2861,operational,public,+254572001111,,,120
+Migori County Referral Hospital,hospital,Kenya,Migori County,Migori,-1.0640,34.4731,operational,public,+254592002222,,,150
+Homabay County Referral Hospital,hospital,Kenya,Homabay County,Homabay,-0.5333,34.4500,operational,public,+254592003333,,,120
+Kitale County Referral Hospital,hospital,Kenya,Trans Nzoia County,Kitale,1.0167,35.0000,operational,public,+254552004444,,,200
+Nandi Hills County Hospital,clinic,Kenya,Nandi County,Nandi Hills,0.1000,35.1833,operational,public,+254532005555,,,50
+Kapenguria County Referral Hospital,hospital,Kenya,West Pokot County,Kapenguria,1.2333,35.1000,operational,public,+254532006666,,,100
+Lodwar County Referral Hospital,hospital,Kenya,Turkana County,Lodwar,3.1167,35.6000,operational,public,+254542007777,,,80
+Isiolo County Referral Hospital,hospital,Kenya,Isiolo County,Isiolo,0.3500,37.5833,operational,public,+254642008888,,,80
+Marsabit County Referral Hospital,hospital,Kenya,Marsabit County,Marsabit,2.3333,37.9833,operational,public,+254692009999,,,60
+Wajir County Referral Hospital,hospital,Kenya,Wajir County,Wajir,1.7500,40.0667,operational,public,+254462010000,,,80
+Mandera County Referral Hospital,hospital,Kenya,Mandera County,Mandera,3.9333,41.8667,operational,public,+254462011111,,,60
+Narok County Referral Hospital,hospital,Kenya,Narok County,Narok,-1.0833,35.8667,operational,public,+254502012222,,,100
+Kajiado County Referral Hospital,hospital,Kenya,Kajiado County,Kajiado,-1.8500,36.7833,operational,public,+254452013333,,,80
+Nanyuki Teaching and Referral Hospital,hospital,Kenya,Laikipia County,Nanyuki,0.0167,37.0667,operational,public,+254622014444,,,200
