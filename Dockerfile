@@ -36,6 +36,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY start.js ./
 
 EXPOSE 3000
 
@@ -43,4 +44,4 @@ ENV NODE_ENV=production
 ENV PORT=3000
 
 # Run migrations then start the server
-CMD sh -c "npx prisma migrate deploy 2>&1 && echo '=== Starting Node ===' && node --trace-warnings dist/index.js 2>&1 || (echo 'Node crashed with exit code:' $? && exit 1)"
+CMD ["node", "start.js"]
