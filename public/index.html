@@ -124,13 +124,14 @@
     .token-prompt label { margin-top: 0; }
     .token-prompt .note { font-size: 11px; color: #64748b; margin-top: 4px; }
 
-    /* Type filter pills */
-    .type-filters { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: calc(100% - 240px); }
-    .type-pill { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 2px solid; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 5px; user-select: none; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .type-pill .dot { width: 8px; height: 8px; border-radius: 50%; }
-    .type-pill.active { opacity: 1; }
-    .type-pill.inactive { opacity: 0.4; background: #f1f5f9 !important; border-color: #cbd5e1 !important; color: #94a3b8 !important; }
-    .type-pill.inactive .dot { background: #cbd5e1 !important; }
+
+    /* Clickable legend items */
+    .legend-item.clickable { cursor: pointer; padding: 3px 6px; border-radius: 4px; margin: 0 -6px; transition: all 0.15s; }
+    .legend-item.clickable:hover { background: #f1f5f9; }
+    .legend-item.clickable.selected { background: #eff6ff; font-weight: 600; }
+    .legend-item.clickable.dimmed { opacity: 0.3; }
+    .legend-reset { font-size: 11px; color: #3b82f6; cursor: pointer; margin-top: 6px; display: none; }
+    .legend-reset.visible { display: block; }
     @media (max-width: 768px) {
       .layout { grid-template-columns: 1fr; grid-template-rows: 50% 50%; }
       .detail-panel { width: calc(100% - 32px); }
@@ -197,25 +198,18 @@
 
     <div class="map-container">
       <div id="map"></div>
-      <div class="type-filters" id="type-filters">
-        <div class="type-pill active" data-type="hospital" style="background:#fef2f2; border-color:#dc2626; color:#991b1b;" onclick="toggleType('hospital')"><span class="dot" style="background:#dc2626;"></span>Hospitals</div>
-        <div class="type-pill active" data-type="clinic" style="background:#eff6ff; border-color:#2563eb; color:#1e40af;" onclick="toggleType('clinic')"><span class="dot" style="background:#2563eb;"></span>Clinics</div>
-        <div class="type-pill active" data-type="health_post" style="background:#f0fdf4; border-color:#16a34a; color:#166534;" onclick="toggleType('health_post')"><span class="dot" style="background:#16a34a;"></span>Health Posts</div>
-        <div class="type-pill active" data-type="pharmacy" style="background:#faf5ff; border-color:#9333ea; color:#6b21a8;" onclick="toggleType('pharmacy')"><span class="dot" style="background:#9333ea;"></span>Pharmacies</div>
-        <div class="type-pill active" data-type="laboratory" style="background:#fffbeb; border-color:#f59e0b; color:#92400e;" onclick="toggleType('laboratory')"><span class="dot" style="background:#f59e0b;"></span>Labs</div>
-        <div class="type-pill active" data-type="community_health_center" style="background:#ecfeff; border-color:#0891b2; color:#155e75;" onclick="toggleType('community_health_center')"><span class="dot" style="background:#0891b2;"></span>CHC</div>
-      </div>
       <div class="map-loading" id="map-loading">Loading map markers...</div>
       <div class="map-legend" id="map-legend">
-        <div class="legend-toggle" onclick="toggleLegend()">Legend <span class="arrow">▼</span></div>
+        <div class="legend-toggle" onclick="toggleLegend()">Legend <span class="arrow">?</span></div>
         <div class="legend-body">
-          <h4>Facility Type</h4>
-        <div class="legend-item"><div class="legend-dot" style="background:#dc2626;"></div> Hospital</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div> Clinic</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Health Post</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#9333ea;"></div> Pharmacy</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div> Laboratory</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#0891b2;"></div> Community Health Center</div>
+          <h4>Facility Type <span style="font-size:9px;font-weight:400;color:#94a3b8;">(click to filter)</span></h4>
+        <div class="legend-item clickable" data-type="hospital" onclick="filterByType('hospital')"><div class="legend-dot" style="background:#dc2626;"></div> Hospital</div>
+        <div class="legend-item clickable" data-type="clinic" onclick="filterByType('clinic')"><div class="legend-dot" style="background:#2563eb;"></div> Clinic</div>
+        <div class="legend-item clickable" data-type="health_post" onclick="filterByType('health_post')"><div class="legend-dot" style="background:#16a34a;"></div> Health Post</div>
+        <div class="legend-item clickable" data-type="pharmacy" onclick="filterByType('pharmacy')"><div class="legend-dot" style="background:#9333ea;"></div> Pharmacy</div>
+        <div class="legend-item clickable" data-type="laboratory" onclick="filterByType('laboratory')"><div class="legend-dot" style="background:#f59e0b;"></div> Laboratory</div>
+        <div class="legend-item clickable" data-type="community_health_center" onclick="filterByType('community_health_center')"><div class="legend-dot" style="background:#0891b2;"></div> Community Health Center</div>
+        <div class="legend-reset" id="legend-reset" onclick="showAllTypes()">? Show all types</div>
         <div class="legend-cluster">
           <h4>Data Quality</h4>
           <div class="legend-item"><div class="legend-dot" style="background:#94a3b8; opacity:0.5;"></div> Unverified (faded)</div>
@@ -446,26 +440,48 @@
       laboratory: L.layerGroup(),
       community_health_center: L.layerGroup()
     };
-    const activeTypes = new Set(['hospital', 'clinic', 'health_post', 'pharmacy', 'laboratory', 'community_health_center']);
 
-    function toggleType(type) {
-      const pill = document.querySelector(`.type-pill[data-type="${type}"]`);
-      if (activeTypes.has(type)) {
-        activeTypes.delete(type);
-        pill.classList.remove('active');
-        pill.classList.add('inactive');
-      } else {
-        activeTypes.add(type);
-        pill.classList.remove('inactive');
-        pill.classList.add('active');
+    let selectedType = null; // null means show all
+
+    function filterByType(type) {
+      const items = document.querySelectorAll('.legend-item.clickable');
+      const resetBtn = document.getElementById('legend-reset');
+
+      if (selectedType === type) {
+        // Clicking same type again ? show all
+        showAllTypes();
+        return;
       }
+
+      selectedType = type;
+      items.forEach(item => {
+        if (item.dataset.type === type) {
+          item.classList.add('selected');
+          item.classList.remove('dimmed');
+        } else {
+          item.classList.remove('selected');
+          item.classList.add('dimmed');
+        }
+      });
+      resetBtn.classList.add('visible');
+      rebuildCluster();
+    }
+
+    function showAllTypes() {
+      selectedType = null;
+      const items = document.querySelectorAll('.legend-item.clickable');
+      const resetBtn = document.getElementById('legend-reset');
+      items.forEach(item => {
+        item.classList.remove('selected', 'dimmed');
+      });
+      resetBtn.classList.remove('visible');
       rebuildCluster();
     }
 
     function rebuildCluster() {
       clusterGroup.clearLayers();
       Object.entries(typeLayers).forEach(([type, layer]) => {
-        if (activeTypes.has(type)) {
+        if (!selectedType || selectedType === type) {
           layer.eachLayer(marker => clusterGroup.addLayer(marker));
         }
       });
