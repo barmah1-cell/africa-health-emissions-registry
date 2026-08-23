@@ -510,38 +510,39 @@
       mapLoading.classList.add('visible');
 
       const filterParams = getFilterParams();
-      // Fetch up to 5000 facilities for map display
       const url = `${API_BASE}/facilities?page=1&pageSize=500${filterParams}`;
       
       try {
         const resp = await fetch(url);
         const data = await resp.json();
 
+        // Clear all type layers and cluster
+        Object.values(typeLayers).forEach(l => l.clearLayers());
         clusterGroup.clearLayers();
 
-        const markers = [];
         data.data.forEach(f => {
           if (!f.geolocation) return;
-          markers.push(makeMarker(f));
+          const marker = makeMarker(f);
+          const layer = typeLayers[f.facilityType] || typeLayers.clinic;
+          layer.addLayer(marker);
         });
 
-        clusterGroup.addLayers(markers);
-
-        // Also load additional pages for the map if there are more
+        // Load additional pages
         if (data.pagination.totalPages > 1 && data.pagination.totalCount <= 5000) {
           for (let page = 2; page <= data.pagination.totalPages; page++) {
             const pageUrl = `${API_BASE}/facilities?page=${page}&pageSize=500${filterParams}`;
             const pageResp = await fetch(pageUrl);
             const pageData = await pageResp.json();
-            const pageMarkers = [];
             pageData.data.forEach(f => {
               if (!f.geolocation) return;
-              pageMarkers.push(makeMarker(f));
+              const marker = makeMarker(f);
+              const layer = typeLayers[f.facilityType] || typeLayers.clinic;
+              layer.addLayer(marker);
             });
-            clusterGroup.addLayers(pageMarkers);
           }
         }
-              rebuildCluster();
+
+        rebuildCluster();
       } catch (err) {
         console.error('Failed to load map markers:', err);
       } finally {
