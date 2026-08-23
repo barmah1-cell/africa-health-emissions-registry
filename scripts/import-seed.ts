@@ -12,7 +12,7 @@ async function main() {
   const prisma = new PrismaClient();
 
   try {
-    const csvPath = resolve(__dirname, '..', 'data', 'seed-diverse-facilities.csv');
+    const csvPath = resolve(__dirname, '..', 'data', 'sub-saharan_health_facilities.xlsx');
     const csvBuffer = readFileSync(csvPath);
 
     console.log(`Read CSV file: ${csvBuffer.length} bytes`);
