@@ -21,7 +21,7 @@
     
     .sidebar { background: white; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; min-width: 360px; transition: min-width 0.3s, width 0.3s; }
     
-    .sidebar-toggle { position: fixed; top: 140px; left: 328px; z-index: 1001; background: white; border: none; width: 32px; height: 32px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: left 0.3s; }
+    .sidebar-toggle { position: fixed; top: 72px; left: 328px; z-index: 1001; background: white; border: none; width: 32px; height: 32px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: left 0.3s; }
     .sidebar-toggle:hover { background: #f1f5f9; }
     .layout.sidebar-hidden ~ .sidebar-toggle, .sidebar-hidden .sidebar-toggle { left: 8px; }
     
@@ -57,7 +57,7 @@
     .map-loading { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(26,26,46,0.9); color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; z-index: 1000; display: none; }
     .map-loading.visible { display: block; }
 
-    .map-legend { position: absolute; bottom: 24px; left: 16px; background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.12); padding: 0; z-index: 1000; font-size: 12px; max-width: 200px; overflow: hidden; transition: all 0.2s; }
+    .map-legend { position: absolute; bottom: 24px; right: 16px; background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.12); padding: 0; z-index: 1000; font-size: 12px; max-width: 200px; overflow: hidden; transition: all 0.2s; }
     .map-legend.collapsed .legend-body { display: none; }
     .map-legend.collapsed { padding: 0; }
     .legend-toggle { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; cursor: pointer; user-select: none; font-weight: 600; font-size: 12px; color: #1a1a2e; }
