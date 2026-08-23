@@ -448,7 +448,6 @@
       const resetBtn = document.getElementById('legend-reset');
 
       if (selectedType === type) {
-        // Clicking same type again ? show all
         showAllTypes();
         return;
       }
@@ -464,7 +463,8 @@
         }
       });
       resetBtn.classList.add('visible');
-      rebuildCluster();
+      // Re-fetch from API with type filter to get ALL of that type
+      loadMapMarkers();
     }
 
     function showAllTypes() {
@@ -475,7 +475,8 @@
         item.classList.remove('selected', 'dimmed');
       });
       resetBtn.classList.remove('visible');
-      rebuildCluster();
+      // Re-fetch without type filter
+      loadMapMarkers();
     }
 
     function rebuildCluster() {
@@ -526,7 +527,8 @@
       mapLoading.classList.add('visible');
 
       const filterParams = getFilterParams();
-      const url = `${API_BASE}/facilities?page=1&pageSize=500${filterParams}`;
+      const typeParam = selectedType ? `&facilityType=${selectedType}` : '';
+      const url = `${API_BASE}/facilities?page=1&pageSize=500${filterParams}${typeParam}`;
       
       try {
         const resp = await fetch(url);
