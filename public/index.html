@@ -480,12 +480,28 @@
       loadMapMarkers();
     }
 
+    // Layer group for displaying individual markers without clustering
+    const directLayer = L.layerGroup().addTo(map);
+
     function rebuildCluster() {
       clusterGroup.clearLayers();
-      Object.entries(typeLayers).forEach(([type, layer]) => {
-        if (!selectedType || selectedType === type) {
-          layer.eachLayer(marker => clusterGroup.addLayer(marker));
+      directLayer.clearLayers();
+
+      if (selectedType) {
+        // When filtering: show individual markers without clustering
+        map.removeLayer(clusterGroup);
+        const layer = typeLayers[selectedType];
+        if (layer) {
+          layer.eachLayer(marker => directLayer.addLayer(marker));
         }
+      } else {
+        // When showing all: use clustering
+        if (!map.hasLayer(clusterGroup)) map.addLayer(clusterGroup);
+        Object.entries(typeLayers).forEach(([type, layer]) => {
+          layer.eachLayer(marker => clusterGroup.addLayer(marker));
+        });
+      }
+    }
       });
     }
 
