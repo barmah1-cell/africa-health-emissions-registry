@@ -410,7 +410,7 @@
   <script>
     const API_BASE = '/api/v1';
     let currentPage = 1;
-    let pageSize = 100;
+    let pageSize = 50;
     let totalCount = 0;
     let totalPages = 0;
     let facilities = [];
@@ -506,22 +506,17 @@
     }
 
 
-    // Load countries for filter dropdown
-    async function loadCountries() {
+    // Load countries for filter dropdown (hardcoded for speed - no extra API call)
+    function loadCountries() {
       const select = document.getElementById('filter-country');
-      try {
-        const resp = await fetch(`${API_BASE}/facilities?page=1&pageSize=500`);
-        const data = await resp.json();
-        const countries = [...new Set(data.data.map(f => f.country))].sort();
-        countries.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c;
-          opt.textContent = c;
-          select.appendChild(opt);
-        });
-      } catch (err) {
-        console.error('Failed to load countries:', err);
-      }
+      const countries = ['Angola','Benin','Botswana','Burkina Faso','Burundi','Cabo Verde','Cameroon','Central African Republic','Chad','Comoros','Congo',"Côte d'Ivoire",'Democratic Republic of the Congo','Djibouti','Equatorial Guinea','Eritrea','Eswatini','Ethiopia','Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Kenya','Lesotho','Liberia','Madagascar','Malawi','Mali','Mauritania','Mauritius','Mozambique','Namibia','Niger','Nigeria','Rwanda','São Tomé and Príncipe','Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Tanzania','Togo','Uganda','Zambia','Zimbabwe'];
+      countries.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        select.appendChild(opt);
+      });
+    }
     }
 
     // Build filter query string
@@ -538,13 +533,14 @@
       return params;
     }
 
-    // Load map markers for the current filter (up to 5000 for clustering)
+    // Load map markers with progressive loading for speed
     async function loadMapMarkers() {
       const mapLoading = document.getElementById('map-loading');
       mapLoading.classList.add('visible');
 
       const filterParams = getFilterParams();
       const typeParam = selectedType ? `&facilityType=${selectedType}` : '';
+      const maxPages = selectedType ? 6 : 4; // 3000 for filtered, 2000 for all
       const url = `${API_BASE}/facilities?page=1&pageSize=500${filterParams}${typeParam}`;
       
       try {
@@ -554,6 +550,7 @@
         // Clear all type layers and cluster
         Object.values(typeLayers).forEach(l => l.clearLayers());
         clusterGroup.clearLayers();
+        directLayer.clearLayers();
 
         data.data.forEach(f => {
           if (!f.geolocation) return;
@@ -562,10 +559,15 @@
           layer.addLayer(marker);
         });
 
-        // Load additional pages
-        if (data.pagination.totalPages > 1 && data.pagination.totalCount <= 5000) {
-          for (let page = 2; page <= data.pagination.totalPages; page++) {
-            const pageUrl = `${API_BASE}/facilities?page=${page}&pageSize=500${filterParams}`;
+        // Show first batch immediately
+        rebuildCluster();
+        mapLoading.classList.remove('visible');
+
+        // Load remaining pages in background
+        const pagesToLoad = Math.min(data.pagination.totalPages, maxPages);
+        if (pagesToLoad > 1) {
+          for (let page = 2; page <= pagesToLoad; page++) {
+            const pageUrl = `${API_BASE}/facilities?page=${page}&pageSize=500${filterParams}${typeParam}`;
             const pageResp = await fetch(pageUrl);
             const pageData = await pageResp.json();
             pageData.data.forEach(f => {
@@ -574,16 +576,15 @@
               const layer = typeLayers[f.facilityType] || typeLayers.clinic;
               layer.addLayer(marker);
             });
+            rebuildCluster();
           }
         }
-
-        rebuildCluster();
       } catch (err) {
         console.error('Failed to load map markers:', err);
-      } finally {
         mapLoading.classList.remove('visible');
       }
     }
+
 
     function getTypeColor(type) {
       const colors = {
