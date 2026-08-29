@@ -509,7 +509,7 @@
     // Load countries for filter dropdown (hardcoded for speed - no extra API call)
     function loadCountries() {
       const select = document.getElementById('filter-country');
-      const countries = ['Angola','Benin','Botswana','Burkina Faso','Burundi','Cabo Verde','Cameroon','Central African Republic','Chad','Comoros','Congo',"Côte d'Ivoire",'Democratic Republic of the Congo','Djibouti','Equatorial Guinea','Eritrea','Eswatini','Ethiopia','Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Kenya','Lesotho','Liberia','Madagascar','Malawi','Mali','Mauritania','Mauritius','Mozambique','Namibia','Niger','Nigeria','Rwanda','São Tomé and Príncipe','Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Tanzania','Togo','Uganda','Zambia','Zimbabwe'];
+      const countries = ['Angola','Benin','Botswana','Burkina Faso','Burundi','Cabo Verde','Cameroon','Central African Republic','Chad','Comoros','Congo',"Cï¿½te d'Ivoire",'Democratic Republic of the Congo','Djibouti','Equatorial Guinea','Eritrea','Eswatini','Ethiopia','Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Kenya','Lesotho','Liberia','Madagascar','Malawi','Mali','Mauritania','Mauritius','Mozambique','Namibia','Niger','Nigeria','Rwanda','Sï¿½o Tomï¿½ and Prï¿½ncipe','Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Tanzania','Togo','Uganda','Zambia','Zimbabwe'];
       countries.forEach(c => {
         const opt = document.createElement('option');
         opt.value = c;
@@ -533,57 +533,55 @@
       return params;
     }
 
-    // Load map markers with progressive loading for speed
+    // Adapter so existing makeMarker/makeTooltip (which read f.geolocation)
+    // keep working unchanged against the slim marker payload.
+    function normalizeMarker(m) {
+      return { ...m, geolocation: { latitude: m.latitude, longitude: m.longitude } };
+    }
+
+    // Load slim map markers for the current viewport from the dedicated map endpoint.
     async function loadMapMarkers() {
       const mapLoading = document.getElementById('map-loading');
       mapLoading.classList.add('visible');
 
+      const b = map.getBounds(); // current Leaflet viewport
+      const bbox = `sw_lat=${b.getSouth()}&sw_lon=${b.getWest()}&ne_lat=${b.getNorth()}&ne_lon=${b.getEast()}`;
       const filterParams = getFilterParams();
       const typeParam = selectedType ? `&facilityType=${selectedType}` : '';
-      const maxPages = selectedType ? 6 : 4; // 3000 for filtered, 2000 for all
-      const url = `${API_BASE}/facilities?page=1&pageSize=500${filterParams}${typeParam}`;
-      
+      const url = `${API_BASE}/facilities/map?${bbox}${filterParams}${typeParam}`;
+
       try {
-        const resp = await fetch(url);
-        const data = await resp.json();
+        const resp = await fetch(url); // 304s served from browser cache
+        const data = await resp.json(); // { markers, count }
 
         // Clear all type layers and cluster
         Object.values(typeLayers).forEach(l => l.clearLayers());
         clusterGroup.clearLayers();
         directLayer.clearLayers();
 
-        data.data.forEach(f => {
-          if (!f.geolocation) return;
-          const marker = makeMarker(f);
-          const layer = typeLayers[f.facilityType] || typeLayers.clinic;
+        (data.markers || []).forEach(m => {
+          const marker = makeMarker(normalizeMarker(m));
+          const layer = typeLayers[m.facilityType] || typeLayers.clinic;
           layer.addLayer(marker);
         });
 
-        // Show first batch immediately
         rebuildCluster();
-        mapLoading.classList.remove('visible');
-
-        // Load remaining pages in background
-        const pagesToLoad = Math.min(data.pagination.totalPages, maxPages);
-        if (pagesToLoad > 1) {
-          for (let page = 2; page <= pagesToLoad; page++) {
-            const pageUrl = `${API_BASE}/facilities?page=${page}&pageSize=500${filterParams}${typeParam}`;
-            const pageResp = await fetch(pageUrl);
-            const pageData = await pageResp.json();
-            pageData.data.forEach(f => {
-              if (!f.geolocation) return;
-              const marker = makeMarker(f);
-              const layer = typeLayers[f.facilityType] || typeLayers.clinic;
-              layer.addLayer(marker);
-            });
-            rebuildCluster();
-          }
-        }
       } catch (err) {
         console.error('Failed to load map markers:', err);
+      } finally {
         mapLoading.classList.remove('visible');
       }
     }
+
+    // Viewport-driven loading: reload slim markers after the user pans/zooms.
+    // Lightly debounced; moveend also fires after programmatic setView, but
+    // loadMapMarkers only reads the viewport (never calls setView), so there
+    // is no feedback loop.
+    let moveendTimer = null;
+    map.on('moveend', () => {
+      clearTimeout(moveendTimer);
+      moveendTimer = setTimeout(loadMapMarkers, 250);
+    });
 
 
     function getTypeColor(type) {
@@ -689,10 +687,18 @@
       showDetail(facility);
     }
 
-    function selectFacilityFromMap(f) {
+    async function selectFacilityFromMap(f) {
       selectedId = f.id;
       renderList();
-      showDetail(f);
+      // Slim map markers no longer carry full detail (beds/energy/GHG/contact),
+      // so fetch the full facility record on demand before showing detail.
+      try {
+        const resp = await fetch(`${API_BASE}/facilities/${f.id}`);
+        const full = await resp.json();
+        showDetail(full);
+      } catch (err) {
+        console.error('Failed to load facility detail:', err);
+      }
       // Scroll the list to show the selected card
       const card = document.querySelector(`.facility-card.active`);
       if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });

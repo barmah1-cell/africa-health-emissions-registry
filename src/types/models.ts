@@ -123,3 +123,23 @@ export interface ImportReport {
   skippedDuplicate: number;
   errors: Array<{ row: number; errors: string[] }>;
 }
+
+/** Minimal facility projection for rendering a single map marker. */
+export interface MapMarker {
+  id: UUID;
+  latitude: number;
+  longitude: number;
+  facilityType: FacilityType;
+  /** Denormalized display name used for the hover tooltip. */
+  nameText: string;
+  country: string;
+  /** True when verification is stale/unverified (drives marker styling). */
+  staleIndicator: boolean;
+}
+
+/** Response envelope for the slim map endpoint. */
+export interface MapMarkersResult {
+  markers: MapMarker[];
+  /** Number of markers returned (equals markers.length). */
+  count: number;
+}

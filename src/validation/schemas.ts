@@ -424,6 +424,64 @@ export const BoundingBoxQuerySchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Map Markers Query Schema
+// ---------------------------------------------------------------------------
+
+/**
+ * Query params for the slim map endpoint (`GET /api/v1/facilities/map`).
+ *
+ * Bounding box corners are all-or-nothing: either all four corners are supplied
+ * (viewport mode) or none (global mode); supplying 1-3 corners is a validation
+ * error. Attribute filters (country, facilityType, operationalStatus) are
+ * independent and optional. Reuses the general world geo bounds (same as
+ * BoundingBoxQuerySchema) and the African-nation country refinement from
+ * SearchFiltersSchema. Validated via safeParse for aggregated (non-fail-fast)
+ * error reporting.
+ */
+export const MapMarkersQuerySchema = z
+  .object({
+    swLatitude: z
+      .number({ invalid_type_error: 'SW latitude must be a number' })
+      .min(GEO_LAT_MIN, `SW latitude must be >= ${GEO_LAT_MIN}`)
+      .max(GEO_LAT_MAX, `SW latitude must be <= ${GEO_LAT_MAX}`)
+      .optional(),
+    swLongitude: z
+      .number({ invalid_type_error: 'SW longitude must be a number' })
+      .min(GEO_LON_MIN, `SW longitude must be >= ${GEO_LON_MIN}`)
+      .max(GEO_LON_MAX, `SW longitude must be <= ${GEO_LON_MAX}`)
+      .optional(),
+    neLatitude: z
+      .number({ invalid_type_error: 'NE latitude must be a number' })
+      .min(GEO_LAT_MIN, `NE latitude must be >= ${GEO_LAT_MIN}`)
+      .max(GEO_LAT_MAX, `NE latitude must be <= ${GEO_LAT_MAX}`)
+      .optional(),
+    neLongitude: z
+      .number({ invalid_type_error: 'NE longitude must be a number' })
+      .min(GEO_LON_MIN, `NE longitude must be >= ${GEO_LON_MIN}`)
+      .max(GEO_LON_MAX, `NE longitude must be <= ${GEO_LON_MAX}`)
+      .optional(),
+    country: boundedString('Country')
+      .refine(
+        (val) => (AFRICAN_COUNTRIES as readonly string[]).includes(val),
+        { message: 'Country must be a recognized African nation' },
+      )
+      .optional(),
+    facilityType: FacilityTypeSchema.optional(),
+    operationalStatus: OperationalStatusSchema.optional(),
+  })
+  .refine(
+    (q) => {
+      const corners = [q.swLatitude, q.swLongitude, q.neLatitude, q.neLongitude];
+      const provided = corners.filter((c) => c !== undefined).length;
+      return provided === 0 || provided === 4;
+    },
+    {
+      message:
+        'Bounding box requires all four corners (sw_lat, sw_lon, ne_lat, ne_lon) or none',
+    },
+  );
+
+// ---------------------------------------------------------------------------
 // Inferred Types
 // ---------------------------------------------------------------------------
 
@@ -439,6 +497,7 @@ export type SearchFiltersInput = z.infer<typeof SearchFiltersSchema>;
 export type PaginationParamsInput = z.infer<typeof PaginationParamsSchema>;
 export type ProximityQueryInput = z.infer<typeof ProximityQuerySchema>;
 export type BoundingBoxQueryInput = z.infer<typeof BoundingBoxQuerySchema>;
+export type MapMarkersQueryInput = z.infer<typeof MapMarkersQuerySchema>;
 
 // ---------------------------------------------------------------------------
 // Helper: safeParse wrapper for consistent usage

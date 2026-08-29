@@ -5,18 +5,20 @@
  * All routes are prefixed with /api/v1.
  *
  * Route registration order matters for Express path matching:
- * 1. Geospatial routes (specific paths like /facilities/nearby, /facilities/bbox)
- * 2. Bulk routes (specific paths like /facilities/import, /facilities/export)
- * 3. Energy routes (parameterized paths like /facilities/:id/energy-profile)
- * 4. Audit routes (parameterized path /facilities/:id/audit)
- * 5. Facility CRUD routes (base /facilities with :id params last)
- * 6. Emission factor routes (separate /emission-factors namespace)
+ * 1. Map routes (specific path /facilities/map)
+ * 2. Geospatial routes (specific paths like /facilities/nearby, /facilities/bbox)
+ * 3. Bulk routes (specific paths like /facilities/import, /facilities/export)
+ * 4. Energy routes (parameterized paths like /facilities/:id/energy-profile)
+ * 5. Audit routes (parameterized path /facilities/:id/audit)
+ * 6. Facility CRUD routes (base /facilities with :id params last)
+ * 7. Emission factor routes (separate /emission-factors namespace)
  */
 
 import { Express } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { createFacilityRouter } from './facility.routes';
 import { createGeospatialRouter } from './geospatial.routes';
+import { createMapRouter } from './map.routes';
 import { createBulkRouter } from './bulk.routes';
 import { createEnergyRouter } from './energy.routes';
 import { createEmissionFactorRouter } from './emissionFactor.routes';
@@ -31,6 +33,11 @@ const API_PREFIX = '/api/v1';
  * @param prisma - Prisma client instance shared across services
  */
 export function registerRoutes(app: Express, prisma: PrismaClient): void {
+  // Map routes: /api/v1/facilities/map (slim marker projection)
+  // Mounted at prefix level since the path includes /facilities/. Registered
+  // before the facility CRUD router so /facilities/map matches before /facilities/:id.
+  app.use(API_PREFIX, createMapRouter(prisma));
+
   // Geospatial routes: /api/v1/facilities/nearby, /api/v1/facilities/bbox
   // Mounted at prefix level since paths include /facilities/
   app.use(API_PREFIX, createGeospatialRouter(prisma));

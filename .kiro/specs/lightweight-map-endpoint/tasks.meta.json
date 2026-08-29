@@ -1,0 +1,332 @@
+{
+  "pbtResults": {
+    "3.3 Write property test — Slim Shape, No Leakage": {
+      "status": "passed",
+      "lastRunTimestamp": 1788039266823
+    },
+    "3.4 Write property test — Soft-Delete Exclusion": {
+      "status": "passed",
+      "lastRunTimestamp": 1788039267762
+    },
+    "3.5 Write property test — All-or-Nothing BBox Validation": {
+      "status": "passed",
+      "lastRunTimestamp": 1788039269161
+    },
+    "3.6 Write property test — Count Invariant": {
+      "status": "passed",
+      "lastRunTimestamp": 1788039269963
+    }
+  },
+  "executionHistory": {
+    "1.1 Define `MapMarker` and `MapMarkersResult` types": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038358833
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038366845
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038434884
+      }
+    ],
+    "2.1 Implement `MapMarkersQuerySchema`": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038358889
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038439245
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038516633
+      }
+    ],
+    "3.1 Implement `MapService.getMapMarkers`": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038358934
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038520262
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038598796
+      }
+    ],
+    "4.1 Implement `createMapRouter` and register it": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038359006
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038614932
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038692194
+      }
+    ],
+    "5. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038359055
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038695941
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038729511
+      }
+    ],
+    "6.1 Update `loadMapMarkers()` to call the slim endpoint": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038359106
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038733368
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038802018
+      }
+    ],
+    "6.2 Update `selectFacilityFromMap(f)` for fetch-on-click detail": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038359152
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038805075
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038858982
+      }
+    ],
+    "8. Final checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038359230
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038862931
+      },
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038882540
+      }
+    ],
+    "1. Add slim marker types": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038434928
+      }
+    ],
+    "2. Add map query validation schema": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038516684
+      }
+    ],
+    "3. Implement MapService": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038598848
+      }
+    ],
+    "4. Implement map route and wire into the app": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038692252
+      }
+    ],
+    "6. Wire the frontend to the slim endpoint": [
+      {
+        "executionId": "e1fbecf0-0f2d-484a-a694-a778f254f22c",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788038859030
+      }
+    ],
+    "2.2 Write unit tests for `MapMarkersQuerySchema`": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039065078
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039168256
+      }
+    ],
+    "3.2 Write unit tests for `MapService.getMapMarkers`": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039066853
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039169287
+      }
+    ],
+    "3.3 Write property test — Slim Shape, No Leakage": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039174971
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039287316
+      }
+    ],
+    "3.4 Write property test — Soft-Delete Exclusion": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039176368
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039288295
+      }
+    ],
+    "3.5 Write property test — All-or-Nothing BBox Validation": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039177324
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039289658
+      }
+    ],
+    "3.6 Write property test — Count Invariant": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039178396
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039290277
+      }
+    ],
+    "4.2 Write property test — BBox Containment": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039310209
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039541552
+      }
+    ],
+    "4.5 Write property test — ETag Stability & 304": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039311199
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039544842
+      }
+    ],
+    "4.3 Write property test — Subset Consistency With the Full List": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039312539
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039542579
+      }
+    ],
+    "4.4 Write property test — Field Agreement": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039313545
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039543465
+      }
+    ],
+    "7.1 Write integration tests for `GET /api/v1/facilities/map`": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039314552
+      },
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039545738
+      }
+    ],
+    "7. Integration tests for the map endpoint": [
+      {
+        "executionId": "c9ac4d86-0374-454e-8f4c-3641ff30eda0",
+        "chatSessionId": "ab0ba083-718a-4faf-8ce2-546d0d36d309",
+        "timestamp": 1788039545794
+      }
+    ]
+  }
+}

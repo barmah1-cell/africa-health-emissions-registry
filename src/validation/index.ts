@@ -41,6 +41,9 @@ export { SearchFiltersSchema, PaginationParamsSchema } from './schemas';
 // Geospatial queries
 export { ProximityQuerySchema, BoundingBoxQuerySchema } from './schemas';
 
+// Map markers query
+export { MapMarkersQuerySchema } from './schemas';
+
 // Helper
 export { validateInput } from './schemas';
 
@@ -58,4 +61,5 @@ export type {
   PaginationParamsInput,
   ProximityQueryInput,
   BoundingBoxQueryInput,
+  MapMarkersQueryInput,
 } from './schemas';

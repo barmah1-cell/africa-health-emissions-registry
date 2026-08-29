@@ -26,6 +26,8 @@ export {
   AuditEntry,
   EmissionEstimate,
   ImportReport,
+  MapMarker,
+  MapMarkersResult,
 } from './models';
 
 export {
