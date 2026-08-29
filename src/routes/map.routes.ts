@@ -35,7 +35,7 @@ export function createMapRouter(prisma: PrismaClient): Router {
     '/facilities/map',
     optionalAuth,
     async (req: Request, res: Response): Promise<void> => {
-      const { sw_lat, sw_lon, ne_lat, ne_lon, country, facilityType, operationalStatus } =
+      const { sw_lat, sw_lon, ne_lat, ne_lon, country, facilityType, operationalStatus, limit } =
         req.query;
 
       const result = await mapService.getMapMarkers({
@@ -46,6 +46,7 @@ export function createMapRouter(prisma: PrismaClient): Router {
         country,
         facilityType,
         operationalStatus,
+        limit: limit !== undefined ? Number(limit) : undefined,
       });
 
       if (!result.success) {

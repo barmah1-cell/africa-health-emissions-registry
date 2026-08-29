@@ -124,6 +124,40 @@ describe('MapMarkersQuerySchema', () => {
     });
   });
 
+  describe('limit validation', () => {
+    it('accepts a valid limit within range', () => {
+      const result = validateInput(MapMarkersQuerySchema, { limit: 500 });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.limit).toBe(500);
+      }
+    });
+
+    it('rejects a limit below the minimum (0)', () => {
+      const result = validateInput(MapMarkersQuerySchema, { limit: 0 });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.errors.map((e) => e.path)).toContain('limit');
+      }
+    });
+
+    it('rejects a limit above the maximum (20001)', () => {
+      const result = validateInput(MapMarkersQuerySchema, { limit: 20001 });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.errors.map((e) => e.path)).toContain('limit');
+      }
+    });
+
+    it('rejects a non-integer limit (1.5)', () => {
+      const result = validateInput(MapMarkersQuerySchema, { limit: 1.5 });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.errors.map((e) => e.path)).toContain('limit');
+      }
+    });
+  });
+
   describe('aggregated (non-fail-fast) validation', () => {
     it('reports all field errors when multiple params are invalid', () => {
       const result = validateInput(MapMarkersQuerySchema, {

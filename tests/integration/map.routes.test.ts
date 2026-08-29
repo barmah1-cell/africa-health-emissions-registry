@@ -177,8 +177,9 @@ describe('GET /api/v1/facilities/map — integration (Task 7.1)', () => {
     const params = call.slice(1) as unknown[];
     expect(sql).toContain('ST_MakeEnvelope');
     expect(sql).toContain('ST_Intersects');
-    // Envelope order: sw_lon, sw_lat, ne_lon, ne_lat.
-    expect(params).toEqual([20, -10, 40, 10]);
+    // Envelope order: sw_lon, sw_lat, ne_lon, ne_lat, followed by the trailing
+    // cap+1 (default 2000 + 1) LIMIT param.
+    expect(params).toEqual([20, -10, 40, 10, 2001]);
   });
 
   it('returns 400 VALIDATION_ERROR for a partial bounding box (only sw_lat)', async () => {
@@ -235,7 +236,32 @@ describe('GET /api/v1/facilities/map — integration (Task 7.1)', () => {
     const res = await request(app).get(MAP_URL);
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ markers: [], count: 0 });
+    expect(res.body).toEqual({ markers: [], count: 0, capped: false });
+  });
+
+  it('exposes a capped=false property when few rows are returned', async () => {
+    queryRawUnsafeMock.mockResolvedValueOnce([makeRow()]);
+
+    const res = await request(app).get(MAP_URL);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('capped', false);
+  });
+
+  it('caps the response (capped=true, markers sliced to limit) when rows exceed limit', async () => {
+    // limit=2 => cap=2, service fetches cap+1=3 rows; mock resolves 3.
+    queryRawUnsafeMock.mockResolvedValueOnce([
+      makeRow({ id: 'a1' }),
+      makeRow({ id: 'b2' }),
+      makeRow({ id: 'c3' }),
+    ]);
+
+    const res = await request(app).get(MAP_URL).query({ limit: 2 });
+
+    expect(res.status).toBe(200);
+    expect(res.body.capped).toBe(true);
+    expect(res.body.markers.length).toBe(2);
+    expect(res.body.count).toBe(2);
   });
 });
 

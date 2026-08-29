@@ -13,7 +13,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-import { MapMarkersQuerySchema, validateInput } from '../validation/schemas';
+import { MapMarkersQuerySchema, validateInput, MAP_MARKERS_DEFAULT_CAP } from '../validation/schemas';
 import { ErrorCode, ERROR_CODES } from '../types/api';
 import { FacilityType } from '../types/enums';
 import { MapMarker, MapMarkersResult } from '../types/models';
@@ -102,7 +102,14 @@ export class MapService {
       params.push(data.operationalStatus);
     }
 
-    // 3. Build the slim projection query.
+    // 3. Apply the marker cap. Fetch cap + 1 rows so we can detect whether the
+    //    result was truncated (more facilities match than the cap allows).
+    const cap = data.limit ?? MAP_MARKERS_DEFAULT_CAP;
+    const fetchLimit = cap + 1;
+    const limitPlaceholder = `$${++p}`;
+    params.push(fetchLimit);
+
+    // 4. Build the slim projection query.
     //    verification_status/verification_date are selected only to compute
     //    staleIndicator and are NOT returned to the client.
     const sql = `
@@ -118,13 +125,19 @@ export class MapService {
       FROM facility f
       WHERE ${conditions.join(' AND ')}
       ORDER BY f.name_text ASC
+      LIMIT ${limitPlaceholder}
     `;
 
-    // 4. Execute the parameterized raw query
+    // 5. Execute the parameterized raw query
     const rows = await this.prisma.$queryRawUnsafe<MapMarkerRow[]>(sql, ...params);
 
-    // 5. Map rows to slim markers, deriving staleIndicator from the reused helper
-    const markers: MapMarker[] = rows.map((r) => ({
+    // 6. Detect truncation: if we got more than `cap` rows, the result is
+    //    capped. Trim back to the cap for the response.
+    const capped = rows.length > cap;
+    const visibleRows = capped ? rows.slice(0, cap) : rows;
+
+    // 7. Map rows to slim markers, deriving staleIndicator from the reused helper
+    const markers: MapMarker[] = visibleRows.map((r) => ({
       id: r.id,
       latitude: r.latitude,
       longitude: r.longitude,
@@ -137,6 +150,6 @@ export class MapService {
       ),
     }));
 
-    return { success: true, data: { markers, count: markers.length } };
+    return { success: true, data: { markers, count: markers.length, capped } };
   }
 }

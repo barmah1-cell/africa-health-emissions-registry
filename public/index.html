@@ -132,6 +132,9 @@
     .legend-item.clickable.dimmed { opacity: 0.3; }
     .legend-reset { font-size: 11px; color: #3b82f6; cursor: pointer; margin-top: 6px; display: none; }
     .legend-reset.visible { display: block; }
+    .map-cap-banner { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.12); display: none; }
+    .map-cap-banner.visible { display: block; }
+
     @media (max-width: 768px) {
       .layout { grid-template-columns: 1fr; grid-template-rows: 50% 50%; }
       .detail-panel { width: calc(100% - 32px); }
@@ -199,6 +202,7 @@
     <div class="map-container">
       <div id="map"></div>
       <div class="map-loading" id="map-loading">Loading map markers...</div>
+      <div class="map-cap-banner" id="map-cap-banner">Showing a subset of facilities. Zoom in or filter to see more.</div>
       <div class="map-legend" id="map-legend">
         <div class="legend-toggle" onclick="toggleLegend()">Legend <span class="arrow">?</span></div>
         <div class="legend-body">

@@ -280,5 +280,39 @@ describe('MapService.getMapMarkers — property-based tests', () => {
         { numRuns: 50 },
       );
     });
+
+    it('when capped, markers.length equals the requested cap and count stays consistent', async () => {
+      await fc.assert(
+        fc.asyncProperty(
+          // A small cap in [1, 10].
+          fc.integer({ min: 1, max: 10 }),
+          dbRowsArb,
+          async (cap, rows) => {
+            // The service fetches cap+1 rows; the mock stands in for the DB
+            // honoring the LIMIT clause by returning at most cap+1 rows.
+            const fetched = rows.slice(0, cap + 1);
+            mockPrisma.$queryRawUnsafe.mockResolvedValueOnce(fetched);
+
+            const result = await service.getMapMarkers({ limit: cap });
+
+            expect(result.success).toBe(true);
+            if (!result.success) return;
+
+            // Count invariant always holds.
+            expect(result.data.count).toBe(result.data.markers.length);
+
+            if (fetched.length > cap) {
+              // Truncated: capped is set and markers trimmed back to the cap.
+              expect(result.data.capped).toBe(true);
+              expect(result.data.markers.length).toBe(cap);
+            } else {
+              expect(result.data.capped).toBe(false);
+              expect(result.data.markers.length).toBe(fetched.length);
+            }
+          },
+        ),
+        { numRuns: 50 },
+      );
+    });
   });
 });

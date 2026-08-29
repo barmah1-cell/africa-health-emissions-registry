@@ -142,4 +142,9 @@ export interface MapMarkersResult {
   markers: MapMarker[];
   /** Number of markers returned (equals markers.length). */
   count: number;
+  /**
+   * True when the result was truncated by the marker cap (more facilities
+   * match the query than were returned). Signals the client to zoom in.
+   */
+  capped: boolean;
 }

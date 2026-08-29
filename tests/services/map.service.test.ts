@@ -94,7 +94,9 @@ describe('MapService.getMapMarkers', () => {
       const { sql, params } = lastQueryCall();
       expect(sql).toContain('f.deleted_at IS NULL');
       expect(sql).not.toContain('ST_Intersects');
-      expect(params).toEqual([]);
+      expect(sql).toContain('LIMIT');
+      // Default cap (2000) + 1 is appended as the trailing bound param.
+      expect(params).toEqual([2001]);
     });
 
     it('binds bbox corners in order [swLon, swLat, neLon, neLat] using placeholders (no interpolation)', async () => {
@@ -118,8 +120,10 @@ describe('MapService.getMapMarkers', () => {
       expect(sql).toContain('$4');
       expect(sql).not.toContain('25');
       expect(sql).not.toContain('40');
-      // Bound params in ST_MakeEnvelope order: sw_lon, sw_lat, ne_lon, ne_lat.
-      expect(params).toEqual([25.0, -10.5, 40.0, 5.5]);
+      expect(sql).toContain('LIMIT');
+      // Bound params in ST_MakeEnvelope order: sw_lon, sw_lat, ne_lon, ne_lat,
+      // followed by the trailing cap+1 LIMIT param.
+      expect(params).toEqual([25.0, -10.5, 40.0, 5.5, 2001]);
     });
 
     it('adds a bound country condition', async () => {
@@ -130,7 +134,7 @@ describe('MapService.getMapMarkers', () => {
       const { sql, params } = lastQueryCall();
       expect(sql).toContain('f.country = $1');
       expect(sql).not.toContain('Nigeria');
-      expect(params).toEqual(['Nigeria']);
+      expect(params).toEqual(['Nigeria', 2001]);
     });
 
     it('adds a bound facility_type condition', async () => {
@@ -141,7 +145,7 @@ describe('MapService.getMapMarkers', () => {
       const { sql, params } = lastQueryCall();
       expect(sql).toContain('f.facility_type = $1');
       expect(sql).not.toContain("'hospital'");
-      expect(params).toEqual(['hospital']);
+      expect(params).toEqual(['hospital', 2001]);
     });
 
     it('adds a bound operational_status condition', async () => {
@@ -152,7 +156,7 @@ describe('MapService.getMapMarkers', () => {
       const { sql, params } = lastQueryCall();
       expect(sql).toContain('f.operational_status = $1');
       expect(sql).not.toContain("'operational'");
-      expect(params).toEqual(['operational']);
+      expect(params).toEqual(['operational', 2001]);
     });
 
     it('binds bbox and every filter with sequential placeholders in the correct order', async () => {
@@ -172,7 +176,8 @@ describe('MapService.getMapMarkers', () => {
       expect(sql).toContain('f.country = $5');
       expect(sql).toContain('f.facility_type = $6');
       expect(sql).toContain('f.operational_status = $7');
-      expect(params).toEqual([25.0, -10.5, 40.0, 5.5, 'Nigeria', 'hospital', 'operational']);
+      expect(sql).toContain('LIMIT $8');
+      expect(params).toEqual([25.0, -10.5, 40.0, 5.5, 'Nigeria', 'hospital', 'operational', 2001]);
     });
   });
 
@@ -244,7 +249,7 @@ describe('MapService.getMapMarkers', () => {
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toEqual({ markers: [], count: 0 });
+        expect(result.data).toEqual({ markers: [], count: 0, capped: false });
       }
     });
 
@@ -260,6 +265,47 @@ describe('MapService.getMapMarkers', () => {
       if (result.success) {
         expect(result.data.count).toBe(2);
         expect(result.data.count).toBe(result.data.markers.length);
+      }
+    });
+  });
+
+  describe('marker cap', () => {
+    it('caps the result and sets capped=true when rows exceed the requested limit', async () => {
+      // limit: 2 => cap=2, fetchLimit=3. Mock resolves 3 rows (cap+1).
+      mockPrisma.$queryRawUnsafe.mockResolvedValueOnce([
+        makeRow({ id: FACILITY_ID_1 }),
+        makeRow({ id: FACILITY_ID_2 }),
+        makeRow({ id: '770e8400-e29b-41d4-a716-446655440002' }),
+      ]);
+
+      const result = await service.getMapMarkers({ limit: 2 });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.capped).toBe(true);
+        expect(result.data.markers.length).toBe(2); // sliced back to cap
+        expect(result.data.count).toBe(2);
+      }
+
+      // The trailing bound LIMIT param is cap + 1 = 3.
+      const { params } = lastQueryCall();
+      expect(params[params.length - 1]).toBe(3);
+    });
+
+    it('does not cap when rows returned are <= the cap', async () => {
+      // limit: 5 => cap=5, fetchLimit=6. Only 2 rows returned.
+      mockPrisma.$queryRawUnsafe.mockResolvedValueOnce([
+        makeRow({ id: FACILITY_ID_1 }),
+        makeRow({ id: FACILITY_ID_2 }),
+      ]);
+
+      const result = await service.getMapMarkers({ limit: 5 });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.capped).toBe(false);
+        expect(result.data.markers.length).toBe(2);
+        expect(result.data.count).toBe(2);
       }
     });
   });

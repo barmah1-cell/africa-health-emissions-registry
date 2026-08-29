@@ -22,6 +22,9 @@ const MAX_BEDS = 50_000;
 const MAX_KEYWORD_LENGTH = 200;
 const MIN_KEYWORD_LENGTH = 1;
 const MAX_PAGE_SIZE = 500;
+const MAP_MARKERS_MIN_LIMIT = 1;
+const MAP_MARKERS_MAX_LIMIT = 20_000;
+const MAP_MARKERS_DEFAULT_LIMIT = 2_000;
 const MIN_PAGE_SIZE = 1;
 const MIN_RADIUS_KM = 0.1;
 const MAX_RADIUS_KM = 1000;
@@ -468,6 +471,12 @@ export const MapMarkersQuerySchema = z
       .optional(),
     facilityType: FacilityTypeSchema.optional(),
     operationalStatus: OperationalStatusSchema.optional(),
+    limit: z
+      .number({ invalid_type_error: 'Limit must be a number' })
+      .int('Limit must be an integer')
+      .min(MAP_MARKERS_MIN_LIMIT, `Limit must be >= ${MAP_MARKERS_MIN_LIMIT}`)
+      .max(MAP_MARKERS_MAX_LIMIT, `Limit must be <= ${MAP_MARKERS_MAX_LIMIT}`)
+      .optional(),
   })
   .refine(
     (q) => {
@@ -498,6 +507,9 @@ export type PaginationParamsInput = z.infer<typeof PaginationParamsSchema>;
 export type ProximityQueryInput = z.infer<typeof ProximityQuerySchema>;
 export type BoundingBoxQueryInput = z.infer<typeof BoundingBoxQuerySchema>;
 export type MapMarkersQueryInput = z.infer<typeof MapMarkersQuerySchema>;
+
+/** Default marker cap applied when the `limit` param is omitted. */
+export const MAP_MARKERS_DEFAULT_CAP = MAP_MARKERS_DEFAULT_LIMIT;
 
 // ---------------------------------------------------------------------------
 // Helper: safeParse wrapper for consistent usage
