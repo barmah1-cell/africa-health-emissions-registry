@@ -552,7 +552,8 @@
       const bbox = `sw_lat=${b.getSouth()}&sw_lon=${b.getWest()}&ne_lat=${b.getNorth()}&ne_lon=${b.getEast()}`;
       const filterParams = getFilterParams();
       const typeParam = selectedType ? `&facilityType=${selectedType}` : '';
-      const url = `${API_BASE}/facilities/map?${bbox}${filterParams}${typeParam}`;
+      const MAP_MARKER_LIMIT = 2000;
+      const url = `${API_BASE}/facilities/map?${bbox}${filterParams}${typeParam}&limit=${MAP_MARKER_LIMIT}`;
 
       try {
         const resp = await fetch(url); // 304s served from browser cache
@@ -570,6 +571,10 @@
         });
 
         rebuildCluster();
+
+        // Show a hint when the result was truncated by the marker cap.
+        const capBanner = document.getElementById('map-cap-banner');
+        if (capBanner) capBanner.classList.toggle('visible', !!data.capped);
       } catch (err) {
         console.error('Failed to load map markers:', err);
       } finally {
